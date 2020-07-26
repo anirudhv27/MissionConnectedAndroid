@@ -1,4 +1,4 @@
-package com.example.missionconnected;
+package com.avaliveru.missionconnected;
 
 import android.content.Context;
 

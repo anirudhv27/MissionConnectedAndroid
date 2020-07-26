@@ -1,4 +1,4 @@
-package com.example.missionconnected.ui.home;
+package com.avaliveru.missionconnected.ui.home;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;

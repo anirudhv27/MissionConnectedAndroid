@@ -1,4 +1,4 @@
-package com.example.missionconnected;
+package com.avaliveru.missionconnected;
 
 import org.junit.Test;
 
