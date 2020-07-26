@@ -1,4 +1,4 @@
-package com.example.missionconnected.ui.clubs;
+package com.avaliveru.missionconnected.ui.publish;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -12,19 +12,19 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
-import com.example.missionconnected.R;
+import com.avaliveru.missionconnected.R;
 
-public class DashboardFragment extends Fragment {
+public class NotificationsFragment extends Fragment {
 
-    private DashboardViewModel dashboardViewModel;
+    private NotificationsViewModel notificationsViewModel;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        dashboardViewModel =
-                ViewModelProviders.of(this).get(DashboardViewModel.class);
-        View root = inflater.inflate(R.layout.fragment_clubs, container, false);
-        final TextView textView = root.findViewById(R.id.text_dashboard);
-        dashboardViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
+        notificationsViewModel =
+                ViewModelProviders.of(this).get(NotificationsViewModel.class);
+        View root = inflater.inflate(R.layout.fragment_publish, container, false);
+        final TextView textView = root.findViewById(R.id.text_notifications);
+        notificationsViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
             @Override
             public void onChanged(@Nullable String s) {
                 textView.setText(s);
