@@ -15,6 +15,8 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager.widget.ViewPager;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.avaliveru.missionconnected.R;
 import com.avaliveru.missionconnected.dataModels.Club;
@@ -22,6 +24,9 @@ import com.bumptech.glide.Glide;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.firebase.ui.database.SnapshotParser;
+import com.google.android.material.appbar.AppBarLayout;
+import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -45,6 +50,8 @@ public class HomeFragment extends Fragment {
     private HomeViewModel homeViewModel;
     private FirebaseRecyclerAdapter adapter;
     private RecyclerView recyclerView;
+    private TabLayout tabLayout;
+    private ViewPager2 viewPager;
 
     private void fetchClubs() {
         DatabaseReference rootRef = FirebaseDatabase.getInstance()
@@ -124,6 +131,28 @@ public class HomeFragment extends Fragment {
         recyclerView.setHasFixedSize(true);
 
         fetchClubs();
+
+        tabLayout = (TabLayout) root.findViewById(R.id.homeTabLayout);
+        viewPager = (ViewPager2) root.findViewById(R.id.myClubsViewPager);
+        HomeViewPagerAdapter adapter = new HomeViewPagerAdapter(getActivity().getSupportFragmentManager(), getLifecycle());
+
+        adapter.addFragment(new GoingFragment(), "Going");
+        adapter.addFragment(new AllFragment(), "All");
+
+        viewPager.setOrientation(ViewPager2.ORIENTATION_VERTICAL);
+
+        viewPager.setAdapter(adapter);
+
+        new TabLayoutMediator(tabLayout, viewPager,
+                new TabLayoutMediator.TabConfigurationStrategy() {
+                    @Override
+                    public void onConfigureTab(@NonNull TabLayout.Tab tab, int position) {
+                        if (position == 0) tab.setText(R.string.going);
+                        else if (position == 1) {
+                            tab.setText(R.string.all);
+                        }
+                    }
+                }).attach();
 
         return root;
     }

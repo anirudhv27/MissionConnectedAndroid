@@ -43,6 +43,7 @@
         app:layout_constraintTop_toBottomOf="@+id/textView" />
 
     <com.google.android.material.tabs.TabLayout
+        android:id="@+id/homeTabLayout"
         android:layout_width="409dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
@@ -60,6 +61,15 @@
             android:layout_height="wrap_content"
             android:text="@string/all" />
     </com.google.android.material.tabs.TabLayout>
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="1dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/homeTabLayout"
+        android:id="@+id/myClubsViewPager"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
