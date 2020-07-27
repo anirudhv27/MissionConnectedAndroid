@@ -57,6 +57,7 @@ public class HomeFragment extends Fragment {
         DatabaseReference rootRef = FirebaseDatabase.getInstance()
                 .getReference();
         DatabaseReference myClubNamesRef = rootRef.child("users").child("t8AKiEV08yVulfouZM9xAA1gCCC3").child("clubs");
+
         myClubNamesRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -139,7 +140,7 @@ public class HomeFragment extends Fragment {
         adapter.addFragment(new GoingFragment(), "Going");
         adapter.addFragment(new AllFragment(), "All");
 
-        viewPager.setOrientation(ViewPager2.ORIENTATION_VERTICAL);
+        viewPager.setOrientation(ViewPager2.ORIENTATION_HORIZONTAL);
 
         viewPager.setAdapter(adapter);
 
