@@ -4,4 +4,7 @@
     <string name="title_clubs">Clubs</string>
     <string name="title_publish">Publish</string>
     <string name="my_clubs">My Clubs</string>
+    <string name="listevents">List Events</string>
+    <string name="going">Going</string>
+    <string name="all">All</string>
 </resources>
