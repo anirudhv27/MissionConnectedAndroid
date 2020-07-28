@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="209dp"
+        app:cardElevation="1dp"
+        app:cardMaxElevation="2dp"
+        android:layout_gravity="center"
+        android:layout_margin="5dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/clubDetailsImageView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:scaleType="centerCrop"
+                tools:srcCompat="@tools:sample/backgrounds/scenic" />
+
+            <TextView
+                android:id="@+id/clubDetailsNameTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_marginLeft="12dp"
+                android:layout_marginBottom="11dp"
+                android:text="Club Name"
+                android:textColor="#FFFFFF"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+        </RelativeLayout>
+    </androidx.cardview.widget.CardView>
+
+    <Button
+        android:id="@+id/allClubEventsButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="5dp"
+        android:text="All Club Events"
+        android:textColor="#0000FF"/>
+
+    <TextView
+        android:id="@+id/clubDetailsMemberNumberTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="10dp"
+        android:textSize="20dp"
+        android:text="Members: 0 joined" />
+
+    <TextView
+        android:id="@+id/clubDetailsDescriptionTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#000"
+        android:paddingEnd="10dp"
+        android:paddingStart="10dp"
+        android:textSize="17dp"
+        android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec finibus scelerisque enim, non ultrices metus vulputate eget. Maecenas maximus magna felis, eu euismod quam posuere vitae. Suspendisse potenti. Vivamus at eros orci. Aenean in suscipit purus, in fermentum velit. Donec finibus mauris leo. Sed lobortis, enim a interdum vulputate, nunc ex imperdiet ligula, non vulputate ex felis quis orci. Vivamus placerat ut nunc vel luctus. Maecenas accumsan, nisl fringilla dapibus tristique, ligula arcu dignissim eros, sit amet sagittis nisl lacus quis nisl.  Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Aliquam malesuada, metus vel blandit porta, massa mauris pharetra mi, eget laoreet augue metus non dolor. Mauris id nisl maximus, auctor leo ut, faucibus mi. Sed aliquam, metus sit amet aliquam faucibus, arcu purus dignissim mi, eu vulputate sapien tortor sed elit. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Ut congue malesuada libero eu varius. Quisque elementum, nisi quis viverra facilisis, augue magna luctus lacus, ac facilisis quam velit at eros. Sed tincidunt ante ac ipsum tempor, vitae pretium metus sodales. Vestibulum porttitor congue magna, a hendrerit dui laoreet eget. Maecenas faucibus augue non nibh feugiat, quis mollis libero venenatis. Sed non ex hendrerit quam sodales pulvinar. Mauris eu neque iaculis lorem rhoncus fringilla.  Nunc in libero mi. Nunc sed lectus ultricies, faucibus ligula id, tincidunt eros. Cras consequat laoreet arcu. Nam egestas bibendum leo, ornare pharetra sem congue vitae. Vivamus suscipit dolor mi, ac facilisis diam commodo vitae. Donec venenatis quam arcu, non pulvinar ligula aliquam a. Phasellus in elit vulputate nulla gravida mattis. In vel feugiat diam, nec sollicitudin nunc. Suspendisse a neque tortor. Nullam rhoncus nisi et urna luctus fermentum. Aliquam imperdiet egestas vulputate. Nulla vehicula tellus orci, at interdum mauris lobortis nec.  Nam in aliquam eros. Sed porttitor volutpat arcu in auctor. Integer lacinia ut ipsum eleifend tempus. Etiam ullamcorper nulla vitae libero lobortis, sit amet blandit massa rhoncus. Aenean vulputate vitae lacus a luctus. Cras ut vehicula sapien. Sed sagittis, tellus quis viverra facilisis, augue leo imperdiet ex, nec consequat lorem nibh in tellus.  Donec ut molestie velit. Nam eu velit magna. Quisque dolor massa, mollis ut lorem vitae, euismod aliquam quam. Sed aliquet rhoncus dui, eu pellentesque dolor semper vitae. Nam sodales ultrices neque a tincidunt. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Proin eget dui dolor. Nulla vel purus commodo, lacinia metus eget, aliquet metus." />
+
+</LinearLayout>

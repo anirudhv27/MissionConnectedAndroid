@@ -1,5 +1,6 @@
 package com.avaliveru.missionconnected.ui.home;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -20,6 +21,7 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import com.avaliveru.missionconnected.R;
 import com.avaliveru.missionconnected.dataModels.Club;
+import com.avaliveru.missionconnected.ui.ClubsDetailsActivity;
 import com.bumptech.glide.Glide;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
@@ -83,9 +85,18 @@ public class HomeFragment extends Fragment {
                 String key = this.getRef(position).getKey();
                 clubDetailsRef.child(key).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    public void onDataChange(@NonNull final DataSnapshot snapshot) {
                         holder.setTextTitle(snapshot.child("club_name").getValue().toString());
                         holder.setImage(snapshot.child("club_image_url").getValue().toString());
+
+                        holder.root.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                Intent intent = new Intent(HomeFragment.this.getActivity(), ClubsDetailsActivity.class);
+                                intent.putExtra("clubName", snapshot.getKey());
+                                HomeFragment.this.startActivity(intent);
+                            }
+                        });
                     }
 
                     @Override
@@ -219,6 +230,7 @@ public class HomeFragment extends Fragment {
         public RelativeLayout root;
         public ImageView image;
         public TextView clubName;
+        public Club club;
 
         public ViewHolder(View itemView) {
             super(itemView);
