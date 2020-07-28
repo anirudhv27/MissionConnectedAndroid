@@ -88,7 +88,7 @@ public class HomeFragment extends Fragment {
                                 club.clubPreview = snapshot.child("club_preview").getValue().toString();
                                 club.clubImageURL = snapshot.child("club_image_url").getValue().toString();
                                 club.clubName = snapshot.child("club_name").getValue().toString();
-                                club.numberOfMembers = (long) snapshot.child("member_numbers").getValue();
+                               // club.numberOfMembers = (long) snapshot.child("member_numbers").getValue();
                                 return club;
                             }
                         })

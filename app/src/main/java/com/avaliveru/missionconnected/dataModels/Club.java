@@ -7,7 +7,7 @@ public class Club implements Comparable<Club> {
     public String clubDescription;
     public String clubImageURL;
     public String clubID;
-    public long numberOfMembers;
+    public String numberOfMembers;
 
     @Override
     public int compareTo(Club club) {

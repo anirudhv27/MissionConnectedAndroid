@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="90dp"
+        app:cardElevation="1dp"
+        app:cardMaxElevation="2dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/event_list_root">
+
+            <ImageView
+                android:id="@+id/clubImageView"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                tools:srcCompat="@tools:sample/avatars" />
+
+            <TextView
+                android:id="@+id/clubNameTextField"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Club Name"
+                android:layout_toRightOf="@id/clubImageView"
+                android:paddingLeft="7dp"
+                android:paddingTop="8dp"
+                android:textSize="20dp"
+                android:textColor="#FF0000"/>
+
+            <TextView
+                android:id="@+id/clubDescTextField"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Club Desc "
+                android:layout_below="@id/clubNameTextField"
+                android:layout_toRightOf="@id/clubImageView"
+                android:paddingLeft="7dp"
+                android:paddingTop="2dp"
+                android:textStyle="bold" />
+
+
+
+        </RelativeLayout>
+
+
+    </androidx.cardview.widget.CardView>
+</RelativeLayout>
