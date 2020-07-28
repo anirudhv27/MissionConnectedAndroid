@@ -42,91 +42,83 @@ public class AllFragment extends Fragment {
     private RecyclerView recyclerView;
     private FirebaseRecyclerAdapter adapter;
 
-    private Set<String> eventNames = new HashSet<>();
-
     private void fetchEvents() {
         final DatabaseReference rootRef = FirebaseDatabase.getInstance()
                 .getReference();
+
         //TODO: Get user id key from Firebase
         final DatabaseReference myEventNamesRef = rootRef.child("users").child("t8AKiEV08yVulfouZM9xAA1gCCC3").child("events");
-        myEventNamesRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                Map<String, Object> map = (HashMap<String, Object>) snapshot.getValue();
-                eventNames = map.keySet();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                System.out.println("Error: " + error);
-            }
-        });
-
-        Query query = FirebaseDatabase.getInstance()
+        final Query eventDetailRef = FirebaseDatabase.getInstance()
                 .getReference()
                 .child("schools").child("missionsanjosehigh").child("events");
 
-        FirebaseRecyclerOptions<Event> options =
-                new FirebaseRecyclerOptions.Builder<Event>()
-                        .setQuery(query, new SnapshotParser<Event>() {
+        //TODO 1: Figure out some way to only find events with date after today ,might need to adjust database :(
+        FirebaseRecyclerOptions<Boolean> options =
+                new FirebaseRecyclerOptions.Builder<Boolean>()
+                        .setQuery(myEventNamesRef, new SnapshotParser<Boolean>() {
                             @NonNull
                             @Override
-                            public Event parseSnapshot(@NonNull DataSnapshot snapshot) {
-                                Event event = new Event();
-                                event.eventID = snapshot.getKey().toString();
-                                event.eventDescription = snapshot.child("event_description").getValue().toString();
-                                event.eventPreview = snapshot.child("event_preview").getValue().toString();
-                                event.eventImageURL = snapshot.child("event_image_url").getValue().toString();
-                                event.eventName = snapshot.child("event_name").getValue().toString();
-                                event.eventClub = snapshot.child("event_club").getValue().toString();
-                                //event.numberOfAttendees = (long) snapshot.child("member_numbers").getValue();
-                                SimpleDateFormat df = new SimpleDateFormat("MM-dd-yyyy");
-                                try {
-                                    event.eventDate = df.parse(snapshot.child("event_date").getValue().toString());
-                                } catch (ParseException e) {
-                                    e.printStackTrace();
+                            public Boolean parseSnapshot(@NonNull DataSnapshot snapshot) {
+
+                                if (snapshot.child("member_status").getValue().toString().equals("Officer") || snapshot.child("member_status").getValue().toString().equals("Member")) {
+                                    return true;
+                                } else {
+                                    return false;
                                 }
-                                return event;
                             }
                         })
                         .build();
 
-        adapter = new FirebaseRecyclerAdapter<Event, ViewHolder>(options) {
+        adapter = new FirebaseRecyclerAdapter<Boolean, ViewHolder>(options) {
+            @Override
+            protected void onBindViewHolder(@NonNull final ViewHolder holder, int position, @NonNull final Boolean model) {
+                String key = this.getRef(position).getKey();
+                ((DatabaseReference) eventDetailRef).child(key).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        holder.eventID = snapshot.getKey();
+                        String eventImageURL = snapshot.child("event_image_url").getValue().toString();
+                        String eventName = snapshot.child("event_name").getValue().toString();
+                        String eventClub = snapshot.child("event_club").getValue().toString();
 
+                        SimpleDateFormat df = new SimpleDateFormat("MM-dd-yyyy");
+                        Date eventDate = null;
+                        try {
+                            eventDate = df.parse(snapshot.child("event_date").getValue().toString());
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+
+                        rootRef.child("clubs").child(eventClub).addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                holder.setEventClubTitle(snapshot.child("club_name").getValue().toString());
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+                                holder.setEventClubTitle("No Club Available :(");
+                            }
+                        });
+
+                        holder.setEventDateTitle(eventDate);
+                        holder.setEventNameTitle(eventName);
+                        holder.setImage(eventImageURL);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) { }
+                });
+            }
+
+            @NonNull
             @Override
             public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
                 View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_eventslistitem, parent, false);
                 return new ViewHolder(view);
             }
-
-            @Override
-            protected void onBindViewHolder(@NonNull final ViewHolder holder, final int position, @NonNull Event model) {
-                if (eventNames.contains(model.eventID) && model.eventDate.before(new Date())) {
-                    rootRef.child("clubs").child(model.eventClub).addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            holder.setEventClubTitle(snapshot.child("club_name").getValue().toString());
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError error) {
-                            holder.setEventClubTitle("No Club Available :(");
-                        }
-                    });
-                    holder.setEventDateTitle(model.eventDate);
-                    holder.setEventNameTitle(model.eventName);
-                    holder.setImage(model.eventImageURL);
-
-                    holder.root.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            Toast.makeText(getContext(), String.valueOf(position), Toast.LENGTH_SHORT);
-                        }
-                    });
-                }
-            }
-
         };
+
         recyclerView.setAdapter(adapter);
     }
 
@@ -164,6 +156,7 @@ public class AllFragment extends Fragment {
         public TextView eventName;
         public TextView eventClub;
         public TextView eventDate;
+        public String eventID;
 
         public ViewHolder(View itemView) {
             super(itemView);

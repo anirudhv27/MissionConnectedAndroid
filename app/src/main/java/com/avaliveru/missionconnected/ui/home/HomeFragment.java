@@ -57,7 +57,51 @@ public class HomeFragment extends Fragment {
         DatabaseReference rootRef = FirebaseDatabase.getInstance()
                 .getReference();
         DatabaseReference myClubNamesRef = rootRef.child("users").child("t8AKiEV08yVulfouZM9xAA1gCCC3").child("clubs");
+        final DatabaseReference clubDetailsRef= FirebaseDatabase.getInstance()
+                .getReference()
+                .child("schools").child("missionsanjosehigh").child("clubs");
 
+        FirebaseRecyclerOptions<Boolean> options =
+                new FirebaseRecyclerOptions.Builder<Boolean>()
+                        .setQuery(myClubNamesRef, new SnapshotParser<Boolean>() {
+                            @NonNull
+                            @Override
+                            public Boolean parseSnapshot(@NonNull DataSnapshot snapshot) {
+
+                                if (snapshot.getValue().toString().equals("Officer") || snapshot.getValue().toString().equals("Member")) {
+                                    return true;
+                                } else {
+                                    return false;
+                                }
+                            }
+                        })
+                        .build();
+
+        adapter = new FirebaseRecyclerAdapter<Boolean, ViewHolder>(options) {
+            @Override
+            protected void onBindViewHolder(@NonNull final ViewHolder holder, int position, @NonNull final Boolean model) {
+                String key = this.getRef(position).getKey();
+                clubDetailsRef.child(key).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        holder.setTextTitle(snapshot.child("club_name").getValue().toString());
+                        holder.setImage(snapshot.child("club_image_url").getValue().toString());
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) { }
+                });
+            }
+
+            @NonNull
+            @Override
+            public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_myclubslistitem, parent, false);
+                return new ViewHolder(view);
+            }
+        };
+
+        /*
         myClubNamesRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -117,6 +161,7 @@ public class HomeFragment extends Fragment {
             }
 
         };
+        */
         recyclerView.setAdapter(adapter);
     }
 

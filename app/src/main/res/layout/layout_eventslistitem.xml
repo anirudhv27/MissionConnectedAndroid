@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <androidx.cardview.widget.CardView
@@ -12,8 +12,8 @@
         app:cardMaxElevation="2dp">
 
         <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:id="@+id/event_list_root">
 
             <ImageView
@@ -33,7 +33,7 @@
                 android:layout_toRightOf="@id/eventImageView"
                 android:paddingLeft="7dp"
                 android:paddingTop="8dp"
-                android:textSize="20dp"
+                android:textSize="15dp"
                 android:textColor="#FF0000"/>
 
             <TextView
