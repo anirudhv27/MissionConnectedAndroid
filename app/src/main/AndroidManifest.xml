@@ -21,6 +21,8 @@
         <activity
             android:name=".ui.ClubsDetailsActivity"
             android:label="Club Details"/>
+        <activity android:name=".ui.EventsDetailsActivity"
+            android:label="Event Details"/>
     </application>
 
 </manifest>

@@ -92,8 +92,9 @@ public class HomeFragment extends Fragment {
                         holder.root.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                Intent intent = new Intent(HomeFragment.this.getActivity(), ClubsDetailsActivity.class);
+                                Intent intent = new Intent(HomeFragment.this.getContext(), ClubsDetailsActivity.class);
                                 intent.putExtra("clubName", snapshot.getKey());
+                                intent.putExtra("isMyClub", true);
                                 HomeFragment.this.startActivity(intent);
                             }
                         });
@@ -175,7 +176,7 @@ public class HomeFragment extends Fragment {
         */
         recyclerView.setAdapter(adapter);
     }
-
+    //TODO: FIX DASHBOARD TO SHOW GOING TAB
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
@@ -189,8 +190,8 @@ public class HomeFragment extends Fragment {
 
         fetchClubs();
 
-        tabLayout = (TabLayout) root.findViewById(R.id.homeTabLayout);
-        viewPager = (ViewPager2) root.findViewById(R.id.myClubsViewPager);
+        tabLayout = root.findViewById(R.id.homeTabLayout);
+        viewPager = root.findViewById(R.id.myClubsViewPager);
         HomeViewPagerAdapter adapter = new HomeViewPagerAdapter(getActivity().getSupportFragmentManager(), getLifecycle());
 
         adapter.addFragment(new GoingFragment(), "Going");
@@ -205,9 +206,7 @@ public class HomeFragment extends Fragment {
                     @Override
                     public void onConfigureTab(@NonNull TabLayout.Tab tab, int position) {
                         if (position == 0) tab.setText(R.string.going);
-                        else if (position == 1) {
-                            tab.setText(R.string.all);
-                        }
+                        else if (position == 1) tab.setText(R.string.all);
                     }
                 }).attach();
 

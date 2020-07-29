@@ -1,5 +1,6 @@
 package com.avaliveru.missionconnected.ui.home;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.format.DateUtils;
@@ -19,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.avaliveru.missionconnected.R;
 import com.avaliveru.missionconnected.dataModels.Event;
+import com.avaliveru.missionconnected.ui.EventsDetailsActivity;
 import com.bumptech.glide.Glide;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
@@ -33,38 +35,27 @@ import com.google.firebase.database.ValueEventListener;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 
 public class GoingFragment extends Fragment {
     private RecyclerView recyclerView;
     private FirebaseRecyclerAdapter adapter;
 
-    private Set<String> eventNames = new HashSet<>();
-
     private void fetchEvents() {
         final DatabaseReference rootRef = FirebaseDatabase.getInstance()
                 .getReference();
         //TODO: Get user id key from Firebase
-        final DatabaseReference myEventNamesRef = rootRef.child("users").child("t8AKiEV08yVulfouZM9xAA1gCCC3").child("events");
-        final Query eventDetailRef = FirebaseDatabase.getInstance()
+        final Query myEventNamesRef = rootRef.child("users").child("t8AKiEV08yVulfouZM9xAA1gCCC3").child("events").orderByChild("isGoing").equalTo(true);
+        final DatabaseReference eventDetailRef = FirebaseDatabase.getInstance()
                 .getReference()
-                .child("schools").child("missionsanjosehigh").child("events").orderByChild("isGoing").equalTo(true);
+                .child("schools").child("missionsanjosehigh").child("events");
 
         FirebaseRecyclerOptions<Boolean> options =
                 new FirebaseRecyclerOptions.Builder<Boolean>()
-                        .setQuery(myEventNamesRef, new SnapshotParser<Boolean>() {
+                        .setQuery(rootRef.child("users").child("t8AKiEV08yVulfouZM9xAA1gCCC3").child("events").orderByChild("isGoing").equalTo(true), new SnapshotParser<Boolean>() {
                             @NonNull
                             @Override
                             public Boolean parseSnapshot(@NonNull DataSnapshot snapshot) {
-
-                                if (snapshot.child("member_status").getValue().toString().equals("Officer") || snapshot.child("member_status").getValue().toString().equals("Member")) {
-                                    return true;
-                                } else {
-                                    return false;
-                                }
+                                return true;
                             }
                         })
                         .build();
@@ -73,11 +64,18 @@ public class GoingFragment extends Fragment {
             @Override
             protected void onBindViewHolder(@NonNull final ViewHolder holder, int position, @NonNull final Boolean model) {
                 String key = this.getRef(position).getKey();
-                ((DatabaseReference) eventDetailRef).child(key).addListenerForSingleValueEvent(new ValueEventListener() {
+                //TODO: figure out some way to get the child of firebase query instead of database, or some alternate method
+                eventDetailRef.child(key).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    public void onDataChange(@NonNull final DataSnapshot snapshot) {
                         holder.eventID = snapshot.getKey();
-                        String eventImageURL = snapshot.child("event_image_url").getValue().toString();
+                        String eventImageURL = "https://www.androidpolice.com/wp-content/uploads/2015/03/nexus2cee_an.png";
+                        try {
+                            eventImageURL = snapshot.child("event_image_url").getValue().toString();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
                         String eventName = snapshot.child("event_name").getValue().toString();
                         String eventClub = snapshot.child("event_club").getValue().toString();
 
@@ -104,6 +102,16 @@ public class GoingFragment extends Fragment {
                         holder.setEventDateTitle(eventDate);
                         holder.setEventNameTitle(eventName);
                         holder.setImage(eventImageURL);
+
+                        holder.root.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                Intent intent = new Intent(GoingFragment.this.getContext(), EventsDetailsActivity.class);
+                                intent.putExtra("eventName", snapshot.getKey());
+                                intent.putExtra("isGoing", true);
+                                GoingFragment.this.startActivity(intent);
+                            }
+                        });
                     }
 
                     @Override
