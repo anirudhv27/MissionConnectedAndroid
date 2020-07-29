@@ -3,6 +3,9 @@ package com.avaliveru.missionconnected.ui.clubs;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -18,6 +21,7 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.avaliveru.missionconnected.MainActivity;
 import com.avaliveru.missionconnected.R;
 import com.avaliveru.missionconnected.dataModels.Club;
 import com.avaliveru.missionconnected.dataModels.Event;
@@ -47,28 +51,15 @@ public class ClubsTabFragment extends Fragment {
 
     private Set<String> myClubNames = new HashSet<>();
 
-    //private ClubsTabViewModel clubsViewModel;
-
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
+
+        super.onCreateView(inflater, container, savedInstanceState);
         View root = inflater.inflate(R.layout.fragment_clubs, container, false);
-        /*
-        clubsViewModel =
-                ViewModelProviders.of(this).get(ClubsTabViewModel.class);
-
-        final TextView textView = root.findViewById(R.id.text_dashboard);
-        clubsViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
-            @Override
-            public void onChanged(@Nullable String s) {
-                textView.setText(s);
-            }
-        });
-
-        */
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
 
-        recyclerView = root.findViewById(R.id.allRecyclerView);
+        recyclerView = root.findViewById(R.id.myClubsTabRecyclerView);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setHasFixedSize(true);
 
@@ -80,81 +71,63 @@ public class ClubsTabFragment extends Fragment {
 
 
     private void fetchMyClubs() {
-        final DatabaseReference rootRef = FirebaseDatabase.getInstance()
+        DatabaseReference rootRef = FirebaseDatabase.getInstance()
                 .getReference();
-        //TODO: Get user id key from Firebase
-        final DatabaseReference myEventNamesRef = rootRef.child("users").child("t8AKiEV08yVulfouZM9xAA1gCCC3").child("clubs");
-        myEventNamesRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                Map<String, Object> map = (HashMap<String, Object>) snapshot.getValue();
-                myClubNames = map.keySet();
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                System.out.println("Error: " + error);
-            }
-        });
+        DatabaseReference myClubNamesRef = rootRef.child("users").child("t8AKiEV08yVulfouZM9xAA1gCCC3").child("clubs");
 
-        Query query = FirebaseDatabase.getInstance()
+        final DatabaseReference clubDetailsRef= FirebaseDatabase.getInstance()
                 .getReference()
                 .child("schools").child("missionsanjosehigh").child("clubs");
 
-        FirebaseRecyclerOptions<Club> options =
-                new FirebaseRecyclerOptions.Builder<Club>()
-                        .setQuery(query, new SnapshotParser<Club>() {
+        FirebaseRecyclerOptions<Boolean> options =
+                new FirebaseRecyclerOptions.Builder<Boolean>()
+                        .setQuery(myClubNamesRef, new SnapshotParser<Boolean>() {
                             @NonNull
                             @Override
-                            public Club parseSnapshot(@NonNull DataSnapshot snapshot) {
-                                Club club = new Club();
-                                club.clubID = snapshot.getKey().toString();
-                                club.clubDescription = snapshot.child("club_description").getValue().toString();
-                                club.clubPreview = snapshot.child("club_preview").getValue().toString();
-                                club.clubImageURL = snapshot.child("club_image_url").getValue().toString();
-                                club.clubName = snapshot.child("club_name").getValue().toString();
-                                club.numberOfMembers = snapshot.child("club_name").getValue().toString();
-                                return club;
+                            public Boolean parseSnapshot(@NonNull DataSnapshot snapshot) {
+
+                                if (snapshot.getValue().toString().equals("Officer") || snapshot.getValue().toString().equals("Member")) {
+                                    return true;
+                                } else {
+                                    return false;
+                                }
                             }
                         })
                         .build();
 
-        adapter = new FirebaseRecyclerAdapter<Club, ClubsTabFragment.ViewHolder>(options) {
-
+        adapter = new FirebaseRecyclerAdapter<Boolean, ViewHolder>(options) {
             @Override
-            public ClubsTabFragment.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            protected void onBindViewHolder(@NonNull final ViewHolder holder, int position, @NonNull final Boolean model) {
+                String key = this.getRef(position).getKey();
+                clubDetailsRef.child(key).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull final DataSnapshot snapshot) {
+                        holder.setClubNameTitle(snapshot.child("club_name").getValue().toString());
+                        holder.setImage(snapshot.child("club_image_url").getValue().toString());
+
+                      /*  holder.root.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                Intent intent = new Intent(ClubTabFragment.this.getActivity(), ClubsDetailsActivity.class);
+                                intent.putExtra("clubName", snapshot.getKey());
+                                ClubTabFragment.this.startActivity(intent);
+                            }
+                        });*/
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) { }
+                });
+            }
+
+            @NonNull
+            @Override
+            public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
                 View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_myclubs_tabitem, parent, false);
-                return new ClubsTabFragment.ViewHolder(view);
+                return new ViewHolder(view);
             }
 
-            @Override
-            protected void onBindViewHolder(@NonNull final ClubsTabFragment.ViewHolder holder, final int position, @NonNull Club model) {
-                 /*
-                 rootRef.child("clubs").child(model.eventClub).addValueEventListener(new ValueEventListener() {
-                     @Override
-                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-                         holder.setEventClubTitle(snapshot.child("club_name").getValue().toString());
-                     }
-
-                     @Override
-                     public void onCancelled(@NonNull DatabaseError error) {
-                         holder.setEventClubTitle("No Club Available :(");
-                     }
-                 });
-                 */
-                 //holder.setEventDateTitle(model.eventDate);
-                 holder.setClubNameTitle(model.clubName);
-                 holder.setImage(model.clubImageURL);
-                holder.setClubDescTitle(model.clubDescription);
-
-                 holder.root.setOnClickListener(new View.OnClickListener() {
-                     @Override
-                     public void onClick(View view) {
-                         Toast.makeText(getContext(), String.valueOf(position), Toast.LENGTH_SHORT);
-                     }
-                 });
-
-            }
 
         };
         recyclerView.setAdapter(adapter);
@@ -163,12 +136,14 @@ public class ClubsTabFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
+        (((MainActivity) getActivity()).getmClubsTabAddClubMenuItem()).setVisible(true);
         adapter.startListening();
     }
 
     @Override
     public void onStop() {
         super.onStop();
+        (((MainActivity) getActivity()).getmClubsTabAddClubMenuItem()).setVisible(false);
         adapter.stopListening();
     }
 
@@ -180,11 +155,11 @@ public class ClubsTabFragment extends Fragment {
 
         public ViewHolder(View itemView) {
             super(itemView);
-            image = itemView.findViewById(R.id.clubImageView);
-            clubName = itemView.findViewById(R.id.clubNameTextField);
+            image = itemView.findViewById(R.id.clubTabItemImageView);
+            clubName = itemView.findViewById(R.id.clubTabItemNameTextField);
             clubDesc = itemView.findViewById(R.id.clubDescTextField);
             //eventDate = itemView.findViewById(R.id.eventDateTextField);
-            root = itemView.findViewById(R.id.event_list_root);
+            root = itemView.findViewById(R.id.club_list_root);
         }
 
         public void setClubNameTitle(String string) {

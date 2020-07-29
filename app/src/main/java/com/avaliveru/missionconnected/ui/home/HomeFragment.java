@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.avaliveru.missionconnected.MainActivity;
 import com.avaliveru.missionconnected.R;
 import com.avaliveru.missionconnected.dataModels.Club;
 import com.bumptech.glide.Glide;
@@ -54,7 +55,8 @@ public class HomeFragment extends Fragment {
     private ViewPager2 viewPager;
 
     private void fetchClubs() {
-        DatabaseReference rootRef = FirebaseDatabase.getInstance()
+
+         DatabaseReference rootRef = FirebaseDatabase.getInstance()
                 .getReference();
         DatabaseReference myClubNamesRef = rootRef.child("users").child("t8AKiEV08yVulfouZM9xAA1gCCC3").child("clubs");
 
@@ -122,6 +124,7 @@ public class HomeFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
+
         super.onCreateView(inflater, container, savedInstanceState);
         View root = inflater.inflate(R.layout.fragment_home, container, false);
 
@@ -130,6 +133,7 @@ public class HomeFragment extends Fragment {
         recyclerView = root.findViewById(R.id.myClubsRecyclerView);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setHasFixedSize(true);
+
 
         fetchClubs();
 
@@ -154,6 +158,8 @@ public class HomeFragment extends Fragment {
                         }
                     }
                 }).attach();
+
+        //(((MainActivity) getActivity()).getmClubsTabAddClubMenuItem()).setVisible(false);
 
         return root;
     }
