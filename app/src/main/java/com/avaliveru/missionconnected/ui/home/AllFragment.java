@@ -47,7 +47,6 @@ public class AllFragment extends Fragment {
     private void fetchEvents() {
         final DatabaseReference rootRef = FirebaseDatabase.getInstance()
                 .getReference();
-
         //TODO: Get user id key from Firebase
         final DatabaseReference myEventNamesRef = rootRef.child("users").child("t8AKiEV08yVulfouZM9xAA1gCCC3").child("events");
         final DatabaseReference eventDetailRef = FirebaseDatabase.getInstance()
@@ -75,7 +74,7 @@ public class AllFragment extends Fragment {
             @Override
             protected void onBindViewHolder(@NonNull final ViewHolder holder, int position, @NonNull final Boolean model) {
                 String key = this.getRef(position).getKey();
-                (eventDetailRef).child(key).addListenerForSingleValueEvent(new ValueEventListener() {
+                eventDetailRef.child(key).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull final DataSnapshot snapshot) {
                         holder.eventID = snapshot.getKey();
@@ -145,7 +144,6 @@ public class AllFragment extends Fragment {
                 return new ViewHolder(view);
             }
         };
-
         recyclerView.setAdapter(adapter);
     }
 

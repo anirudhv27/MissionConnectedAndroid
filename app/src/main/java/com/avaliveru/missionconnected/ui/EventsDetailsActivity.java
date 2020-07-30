@@ -110,5 +110,6 @@ public class EventsDetailsActivity extends AppCompatActivity {
             isGoingButton.setText("Can't Go");
 
         }
+        finish();
     }
 }

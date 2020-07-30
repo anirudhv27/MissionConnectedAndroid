@@ -1,6 +1,7 @@
 package com.avaliveru.missionconnected.ui;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
@@ -77,6 +78,14 @@ public class ClubsDetailsActivity extends AppCompatActivity {
         });
     }
 
+    public void allClubEventsButtonPressed(View view) {
+        String clubID = getIntent().getStringExtra("clubName");
+
+        Intent newIntent = new Intent(ClubsDetailsActivity.this, AllClubEventsActivity.class);
+        newIntent.putExtra("clubID", clubID);
+        startActivity(newIntent);
+    }
+
     public void subscribeButtonActionPressed(View view) {
         String clubID = getIntent().getStringExtra("clubName");
         if (isMyClub) {
@@ -132,5 +141,6 @@ public class ClubsDetailsActivity extends AppCompatActivity {
             subscribeButton.setText("Unsubscribe");
 
         }
+        finish();
     }
 }
