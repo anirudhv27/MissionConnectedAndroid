@@ -79,31 +79,32 @@ public class ClubsTabFragment extends Fragment {
         final DatabaseReference clubDetailsRef= FirebaseDatabase.getInstance()
                 .getReference()
                 .child("schools").child("missionsanjosehigh").child("clubs");
-
-        FirebaseRecyclerOptions<Boolean> options =
-                new FirebaseRecyclerOptions.Builder<Boolean>()
-                        .setQuery(myClubNamesRef, new SnapshotParser<Boolean>() {
+        FirebaseRecyclerOptions<String> options =
+                new FirebaseRecyclerOptions.Builder<String>()
+                        .setQuery(myClubNamesRef, new SnapshotParser<String>() {
                             @NonNull
                             @Override
-                            public Boolean parseSnapshot(@NonNull DataSnapshot snapshot) {
+                            public String parseSnapshot(@NonNull DataSnapshot snapshot) {
 
                                 if (snapshot.getValue().toString().equals("Officer") || snapshot.getValue().toString().equals("Member")) {
-                                    return true;
+                                    return snapshot.getValue().toString();
                                 } else {
-                                    return false;
+                                    return "";
                                 }
                             }
                         })
                         .build();
 
-        adapter = new FirebaseRecyclerAdapter<Boolean, ViewHolder>(options) {
+        adapter = new FirebaseRecyclerAdapter<String, ViewHolder>(options) {
             @Override
-            protected void onBindViewHolder(@NonNull final ViewHolder holder, int position, @NonNull final Boolean model) {
+            protected void onBindViewHolder(@NonNull final ViewHolder holder, int position, @NonNull final String model) {
                 String key = this.getRef(position).getKey();
                 clubDetailsRef.child(key).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull final DataSnapshot snapshot) {
                         holder.setClubNameTitle(snapshot.child("club_name").getValue().toString());
+                        holder.setClubDescTitle(snapshot.child("club_preview").getValue().toString());
+                        holder.setClubMemberStatus(model);
                         holder.setImage(snapshot.child("club_image_url").getValue().toString());
 
                       /*  holder.root.setOnClickListener(new View.OnClickListener() {
@@ -152,18 +153,23 @@ public class ClubsTabFragment extends Fragment {
         public ImageView image;
         public TextView clubName;
         public TextView clubDesc;
+        public TextView clubMemberStatus;
 
         public ViewHolder(View itemView) {
             super(itemView);
             image = itemView.findViewById(R.id.clubTabItemImageView);
             clubName = itemView.findViewById(R.id.clubTabItemNameTextField);
             clubDesc = itemView.findViewById(R.id.clubDescTextField);
+            clubMemberStatus = itemView.findViewById(R.id.clubMemberStatusField);
             //eventDate = itemView.findViewById(R.id.eventDateTextField);
             root = itemView.findViewById(R.id.club_list_root);
         }
 
         public void setClubNameTitle(String string) {
             clubName.setText(string);
+        }
+        public void setClubMemberStatus(String string) {
+            clubMemberStatus.setText(string);
         }
         public void setClubDescTitle(String string) {
             clubDesc.setText(string);
