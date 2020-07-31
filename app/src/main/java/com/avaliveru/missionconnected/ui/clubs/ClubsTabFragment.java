@@ -1,5 +1,6 @@
 package com.avaliveru.missionconnected.ui.clubs;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -25,6 +26,9 @@ import com.avaliveru.missionconnected.MainActivity;
 import com.avaliveru.missionconnected.R;
 import com.avaliveru.missionconnected.dataModels.Club;
 import com.avaliveru.missionconnected.dataModels.Event;
+import com.avaliveru.missionconnected.ui.AllClubEventsActivity;
+import com.avaliveru.missionconnected.ui.ClubsDetailsActivity;
+import com.avaliveru.missionconnected.ui.EventsDetailsActivity;
 import com.avaliveru.missionconnected.ui.home.AllFragment;
 import com.bumptech.glide.Glide;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
@@ -107,14 +111,15 @@ public class ClubsTabFragment extends Fragment {
                         holder.setClubMemberStatus(model);
                         holder.setImage(snapshot.child("club_image_url").getValue().toString());
 
-                      /*  holder.root.setOnClickListener(new View.OnClickListener() {
+                        holder.root.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                Intent intent = new Intent(ClubTabFragment.this.getActivity(), ClubsDetailsActivity.class);
+                                Intent intent = new Intent(ClubsTabFragment.this.getActivity(), ClubsDetailsActivity.class);
                                 intent.putExtra("clubName", snapshot.getKey());
-                                ClubTabFragment.this.startActivity(intent);
+                                intent.putExtra("isMyClub", true);
+                                ClubsTabFragment.this.startActivity(intent);
                             }
-                        });*/
+                        });
                     }
 
                     @Override
