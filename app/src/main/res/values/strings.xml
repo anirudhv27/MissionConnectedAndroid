@@ -7,4 +7,7 @@
     <string name="listevents">List Events</string>
     <string name="going">Going</string>
     <string name="all">All</string>
+    <string name="signed_out">signout</string>
+    <string name="google_status_fmt">email</string>
+    <string name="firebase_status_fmt">userid</string>
 </resources>

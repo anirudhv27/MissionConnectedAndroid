@@ -18,6 +18,8 @@ import com.avaliveru.missionconnected.R;
 import com.avaliveru.missionconnected.dataModels.Club;
 import com.avaliveru.missionconnected.dataModels.Event;
 import com.bumptech.glide.Glide;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -30,9 +32,10 @@ public class EventsDetailsActivity extends AppCompatActivity {
     Button isGoingButton;
     boolean isGoing;
 
+    FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
     DatabaseReference rootRef = FirebaseDatabase.getInstance()
             .getReference();
-    DatabaseReference myEventNamesRef = rootRef.child("users").child("t8AKiEV08yVulfouZM9xAA1gCCC3").child("events");
+    DatabaseReference myEventNamesRef = rootRef.child("users").child(currentUser.getUid()).child("events");
 
 
     @Override

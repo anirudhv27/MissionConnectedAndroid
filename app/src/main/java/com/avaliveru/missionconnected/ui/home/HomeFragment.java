@@ -29,6 +29,8 @@ import com.firebase.ui.database.SnapshotParser;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -58,7 +60,8 @@ public class HomeFragment extends Fragment {
     private void fetchClubs() {
         DatabaseReference rootRef = FirebaseDatabase.getInstance()
                 .getReference();
-        DatabaseReference myClubNamesRef = rootRef.child("users").child("t8AKiEV08yVulfouZM9xAA1gCCC3").child("clubs");
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        DatabaseReference myClubNamesRef = rootRef.child("users").child(currentUser.getUid()).child("clubs");
         final DatabaseReference clubDetailsRef= FirebaseDatabase.getInstance()
                 .getReference()
                 .child("schools").child("missionsanjosehigh").child("clubs");

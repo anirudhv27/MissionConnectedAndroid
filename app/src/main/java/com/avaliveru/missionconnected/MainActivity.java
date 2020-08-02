@@ -1,10 +1,15 @@
 package com.avaliveru.missionconnected;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
+import com.avaliveru.missionconnected.ui.AllClubEventsActivity;
+import com.avaliveru.missionconnected.ui.AllClubsActivity;
+import com.avaliveru.missionconnected.ui.ClubsDetailsActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -52,7 +57,10 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         if (id == R.id.mybutton) {
-            Toast.makeText(this, " TODO: Add new logic to add clubs ", Toast.LENGTH_LONG).show();//TODO
+                //String clubID = getIntent().getStringExtra("clubName");
+                Intent newIntent = new Intent(MainActivity.this, AllClubsActivity.class);
+                //newIntent.putExtra("clubID", clubID);
+                startActivity(newIntent);
         }
         return super.onOptionsItemSelected(item);
     }
