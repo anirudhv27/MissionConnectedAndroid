@@ -26,6 +26,8 @@ import com.bumptech.glide.Glide;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.firebase.ui.database.SnapshotParser;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -76,8 +78,8 @@ public class GoingFragment extends Fragment {
     private void fetchEvents() {
         final DatabaseReference rootRef = FirebaseDatabase.getInstance()
                 .getReference();
-        //TODO: Get user id key from Firebase
-        final Query myEventNamesRef = rootRef.child("users").child("t8AKiEV08yVulfouZM9xAA1gCCC3").child("events").orderByChild("isGoing").equalTo(true);
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        final Query myEventNamesRef = rootRef.child("users").child(currentUser.getUid()).child("events").orderByChild("isGoing").equalTo(true);
         final DatabaseReference eventDetailRef = FirebaseDatabase.getInstance()
                 .getReference().child("schools").child("missionsanjosehigh").child("events");
 

@@ -18,6 +18,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.avaliveru.missionconnected.R;
 import com.avaliveru.missionconnected.dataModels.Club;
 import com.bumptech.glide.Glide;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -29,10 +31,11 @@ public class ClubsDetailsActivity extends AppCompatActivity {
     Club club;
     Button subscribeButton;
     boolean isMyClub;
-
+    FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+    String loginUserId = currentUser.getUid();
     DatabaseReference rootRef = FirebaseDatabase.getInstance()
             .getReference();
-    DatabaseReference myClubNamesRef = rootRef.child("users").child("t8AKiEV08yVulfouZM9xAA1gCCC3").child("clubs");
+    DatabaseReference myClubNamesRef = rootRef.child("users").child(loginUserId).child("clubs");
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -96,7 +99,7 @@ public class ClubsDetailsActivity extends AppCompatActivity {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     String event = snapshot.getKey();
-                    rootRef.child("users").child("t8AKiEV08yVulfouZM9xAA1gCCC3")
+                    rootRef.child("users").child(loginUserId)
                             .child("events").child(event).removeValue();
                 }
 
@@ -120,9 +123,9 @@ public class ClubsDetailsActivity extends AppCompatActivity {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     String event = snapshot.getKey();
-                    rootRef.child("users").child("t8AKiEV08yVulfouZM9xAA1gCCC3")
+                    rootRef.child("users").child(loginUserId)
                             .child("events").child(event).child("member_status").setValue("Member");
-                    rootRef.child("users").child("t8AKiEV08yVulfouZM9xAA1gCCC3")
+                    rootRef.child("users").child(loginUserId)
                             .child("events").child(event).child("isGoing").setValue(false);
                 }
 
