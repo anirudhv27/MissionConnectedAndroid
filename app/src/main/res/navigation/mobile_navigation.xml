@@ -22,4 +22,17 @@
         android:name="com.avaliveru.missionconnected.ui.publish.PublishFragment"
         android:label="@string/title_publish"
         tools:layout="@layout/fragment_publish" />
+
+    <fragment
+        android:id="@+id/navigation_drawer_support"
+        android:name="com.avaliveru.missionconnected.ui.navdrawer.SupportFragment"
+        android:label="Support"
+        tools:layout="@layout/fragment_support" />
+
+    <fragment
+        android:id="@+id/navigation_drawer_signout"
+        android:name="com.avaliveru.missionconnected.ui.navdrawer.SignOutFragment"
+        android:label="SignOut"
+        tools:layout="@layout/fragment_signout" />
+
 </navigation>

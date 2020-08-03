@@ -10,4 +10,6 @@
     <string name="signed_out">signout</string>
     <string name="google_status_fmt">email</string>
     <string name="firebase_status_fmt">userid</string>
+    <string name="home_navigation_drawer_open">Open Navigation drawer</string>
+    <string name="home_navigation_drawer_close">Close Navigation drawer</string>
 </resources>

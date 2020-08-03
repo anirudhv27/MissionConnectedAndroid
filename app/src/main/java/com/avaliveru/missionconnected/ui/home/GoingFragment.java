@@ -158,6 +158,7 @@ public class GoingFragment extends Fragment {
                 return new ViewHolder(view);
             }
         };
+
         recyclerView.setAdapter(adapter);
     }
 
