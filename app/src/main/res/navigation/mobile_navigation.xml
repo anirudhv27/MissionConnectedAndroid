@@ -19,7 +19,7 @@
 
     <fragment
         android:id="@+id/navigation_publish"
-        android:name="com.avaliveru.missionconnected.ui.publish.NotificationsFragment"
+        android:name="com.avaliveru.missionconnected.ui.publish.PublishFragment"
         android:label="@string/title_publish"
         tools:layout="@layout/fragment_publish" />
 </navigation>

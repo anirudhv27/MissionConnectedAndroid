@@ -1,4 +1,4 @@
-package com.avaliveru.missionconnected.ui.home;
+package com.avaliveru.missionconnected.ui.publish;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -6,57 +6,51 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.viewpager.widget.ViewPager;
+import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.avaliveru.missionconnected.R;
 import com.avaliveru.missionconnected.dataModels.Club;
 import com.avaliveru.missionconnected.ui.ClubsDetailsActivity;
+import com.avaliveru.missionconnected.ui.home.AllFragment;
+import com.avaliveru.missionconnected.ui.home.GoingFragment;
+import com.avaliveru.missionconnected.ui.home.HomeViewPagerAdapter;
 import com.bumptech.glide.Glide;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.firebase.ui.database.SnapshotParser;
-import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+public class PublishFragment extends Fragment {
 
-public class HomeFragment extends Fragment {
-
-    private HomeViewModel homeViewModel;
-    private FirebaseRecyclerAdapter adapter;
-    private RecyclerView recyclerView;
-    private TabLayout tabLayout;
-    private ViewPager2 viewPager;
+    public FirebaseRecyclerAdapter adapter;
+    public HomeViewPagerAdapter pagerAdapter;
+    public ViewPager2 viewPager;
+    public TabLayout tabLayout;
+    public RecyclerView recyclerView;
 
     private void fetchClubs() {
         DatabaseReference rootRef = FirebaseDatabase.getInstance()
                 .getReference();
-        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-        DatabaseReference myClubNamesRef = rootRef.child("users").child(currentUser.getUid()).child("clubs");
+        DatabaseReference myClubNamesRef = rootRef.child("users").child("t8AKiEV08yVulfouZM9xAA1gCCC3").child("clubs");
         final DatabaseReference clubDetailsRef= FirebaseDatabase.getInstance()
                 .getReference()
                 .child("schools").child("missionsanjosehigh").child("clubs");
@@ -67,7 +61,7 @@ public class HomeFragment extends Fragment {
                             @NonNull
                             @Override
                             public Boolean parseSnapshot(@NonNull DataSnapshot snapshot) {
-                                if (snapshot.getValue().toString().equals("Officer") || snapshot.getValue().toString().equals("Member")) {
+                                if (snapshot.getValue().toString().equals("Officer")) {
                                     return true;
                                 } else {
                                     return false;
@@ -86,13 +80,34 @@ public class HomeFragment extends Fragment {
                         holder.setTextTitle(snapshot.child("club_name").getValue().toString());
                         holder.setImage(snapshot.child("club_image_url").getValue().toString());
 
+                        final Club club = new Club();
+                        club.clubName = snapshot.child("club_name").getValue().toString();
+                        club.clubDescription = snapshot.child("club_description").getValue().toString();
+                        club.clubID = snapshot.getKey();
+                        club.clubPreview = snapshot.child("club_preview").getValue().toString();
+                        club.clubImageURL = snapshot.child("club_image_url").getValue().toString();
+
+                        holder.club = club;
+
                         holder.root.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                Intent intent = new Intent(HomeFragment.this.getContext(), ClubsDetailsActivity.class);
-                                intent.putExtra("clubName", snapshot.getKey());
-                                intent.putExtra("isMyClub", true);
-                                HomeFragment.this.startActivity(intent);
+                                //viewPager.setCurrentItem(1);
+
+                                tabLayout.getTabAt(1).select();
+
+                                AddEventFragment addEventFragment = (AddEventFragment) pagerAdapter.createFragment(1);
+
+                                //make a bundle
+                                Bundle b = new Bundle();
+
+                                b.putString("clubName", snapshot.child("club_name").getValue().toString());
+                                b.putString("eventClubID", snapshot.getKey());
+                                b.putBoolean("isFromEdit", false);
+
+                                addEventFragment.setArguments(b);
+
+                                //getActivity().getSupportFragmentManager().beginTransaction().detach(addEventFragment).attach(addEventFragment).commit();
                             }
                         });
                     }
@@ -109,38 +124,38 @@ public class HomeFragment extends Fragment {
                 return new ViewHolder(view);
             }
         };
-
         recyclerView.setAdapter(adapter);
     }
+
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
-        View root = inflater.inflate(R.layout.fragment_home, container, false);
+        View root = inflater.inflate(R.layout.fragment_publish, container, false);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false);
 
-        recyclerView = root.findViewById(R.id.myClubsRecyclerView);
+        recyclerView = root.findViewById(R.id.myOfficerClubsRecyclerView);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setHasFixedSize(true);
 
         fetchClubs();
 
-        tabLayout = root.findViewById(R.id.homeTabLayout);
-        viewPager = root.findViewById(R.id.myClubsViewPager);
-        HomeViewPagerAdapter adapter = new HomeViewPagerAdapter(getActivity().getSupportFragmentManager(), getLifecycle());
+        tabLayout = root.findViewById(R.id.publishTabLayout);
+        viewPager = root.findViewById(R.id.publishTabViewPager);
+        pagerAdapter = new HomeViewPagerAdapter(getChildFragmentManager(), getLifecycle());
 
-        adapter.addFragment(new GoingFragment(), "Going");
-        adapter.addFragment(new AllFragment(), "All");
+        pagerAdapter.addFragment(new MyClubEventsFragment(), "My Club Events");
+        pagerAdapter.addFragment(new AddEventFragment(), "Add Event");
 
         viewPager.setOrientation(ViewPager2.ORIENTATION_HORIZONTAL);
 
-        viewPager.setAdapter(adapter);
+        viewPager.setAdapter(pagerAdapter);
 
         new TabLayoutMediator(tabLayout, viewPager,
                 new TabLayoutMediator.TabConfigurationStrategy() {
                     @Override
                     public void onConfigureTab(@NonNull TabLayout.Tab tab, int position) {
-                        if (position == 0) tab.setText(R.string.going);
-                        else if (position == 1) tab.setText(R.string.all);
+                        if (position == 0) tab.setText("My Club Events");
+                        else if (position == 1) tab.setText("Add Event");
                     }
                 }).attach();
 
@@ -177,7 +192,7 @@ public class HomeFragment extends Fragment {
         }
 
         public void setImage(String imageURL) {
-           Glide.with(getContext()).load(Uri.parse(imageURL)).into(image);
+            Glide.with(getContext()).load(Uri.parse(imageURL)).into(image);
         }
     }
 }
