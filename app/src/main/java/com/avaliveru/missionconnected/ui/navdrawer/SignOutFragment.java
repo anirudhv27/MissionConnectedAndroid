@@ -14,6 +14,7 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.avaliveru.missionconnected.MainActivity;
 import com.avaliveru.missionconnected.R;
+import com.google.firebase.auth.FirebaseAuth;
 
 public class SignOutFragment extends Fragment {
 
@@ -25,15 +26,9 @@ public class SignOutFragment extends Fragment {
         super.onCreateView(inflater, container, savedInstanceState);
         View root = inflater.inflate(R.layout.fragment_signout, container, false);
 
-        signOutViewModel =
-                ViewModelProviders.of(this).get(SignOutViewModel.class);
-        final TextView textView = root.findViewById(R.id.text_signout);
-        signOutViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
-            @Override
-            public void onChanged(@Nullable String s) {
-                textView.setText(s);
-            }
-        });
+        // FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        //mAuth.signOut();
+
         return root;
     }
 }

@@ -27,7 +27,7 @@ public class SupportFragment extends Fragment {
 
         supportViewModel =
                 ViewModelProviders.of(this).get(SupportViewModel.class);
-        final TextView textView = root.findViewById(R.id.text_notifications);
+        final TextView textView = root.findViewById(R.id.text_support);
         supportViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
             @Override
             public void onChanged(@Nullable String s) {

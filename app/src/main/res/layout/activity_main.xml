@@ -15,11 +15,12 @@
 
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/navigation_view_drawer"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
         android:layout_gravity="start"
-        android:fitsSystemWindows="true"
-        app:menu="@menu/nav_drawer_menu">
+        android:layout_marginRight="100dp"
+        android:layout_marginTop="50dp"
+         app:menu="@menu/nav_drawer_menu">
     </com.google.android.material.navigation.NavigationView>
 </androidx.drawerlayout.widget.DrawerLayout>
 

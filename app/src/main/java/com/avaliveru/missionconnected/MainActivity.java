@@ -17,6 +17,7 @@ import com.google.firebase.database.annotations.Nullable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -40,26 +41,53 @@ public class MainActivity extends AppCompatActivity {
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
-        toolBar = (Toolbar) findViewById ( R.id.toolbar );
-        setSupportActionBar( toolBar );
-        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled ( true );
-        Objects.requireNonNull(getSupportActionBar()).setDisplayShowHomeEnabled(true);
+
+        toolBar = (Toolbar) findViewById (R.id.toolbar);
+        setSupportActionBar(toolBar);
+
         drawerLayout = findViewById(R.id.navigation_layout);
         navigationView = findViewById ( R.id.navigation_view_drawer );
         mAppBarConfiguration = new AppBarConfiguration.Builder(
                 R.id.navigation_drawer_support, R.id.navigation_drawer_signout)
                 .setDrawerLayout( drawerLayout)
                 .build();
+
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController( navigationView, navController);
-        getSupportActionBar().setDisplayHomeAsUpEnabled( true );
+
         bottomNavigation = findViewById(R.id.nav_view);
         NavigationUI.setupWithNavController(bottomNavigation, navController);
+
+        if(getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayShowTitleEnabled(true);
+          // getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+          // getSupportActionBar().setHomeButtonEnabled(true);
+        }
+
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawerLayout, toolBar, R.string.home_navigation_drawer_open, R.string.home_navigation_drawer_close) {
+
+            public void onDrawerClosed(View view) {
+                super.onDrawerClosed(view);
+                invalidateOptionsMenu();
+            }
+
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+                invalidateOptionsMenu();
+            }
+
+            @Override
+            public void onDrawerSlide(View drawerView, float slideOffset) {
+                super.onDrawerSlide(drawerView, slideOffset);
+            }
+        };
+        drawerLayout.addDrawerListener(toggle);
+        toggle.syncState();
 
        // View navView = navigationView.inflateHeaderView ( R.layout.navigation_header_layout);
         //NavProfileImage = navView.findViewById ( R.id.nav_profile_image );
