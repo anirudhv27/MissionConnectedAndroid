@@ -13,7 +13,7 @@
 
     <fragment
         android:id="@+id/navigation_clubs"
-        android:name="com.avaliveru.missionconnected.ui.clubs.DashboardFragment"
+        android:name="com.avaliveru.missionconnected.ui.clubs.ClubsTabFragment"
         android:label="@string/title_clubs"
         tools:layout="@layout/fragment_clubs" />
 

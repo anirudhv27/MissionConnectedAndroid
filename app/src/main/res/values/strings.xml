@@ -1,10 +1,13 @@
 <resources>
     <string name="app_name">Mission Connected</string>
     <string name="title_home">Dashboard</string>
-    <string name="title_clubs">Clubs</string>
+    <string name="title_clubs">My Clubs</string>
     <string name="title_publish">Publish</string>
     <string name="my_clubs">My Clubs</string>
     <string name="listevents">List Events</string>
     <string name="going">Going</string>
     <string name="all">All</string>
+    <string name="signed_out">signout</string>
+    <string name="google_status_fmt">email</string>
+    <string name="firebase_status_fmt">userid</string>
 </resources>

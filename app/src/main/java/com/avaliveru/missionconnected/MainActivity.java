@@ -1,7 +1,15 @@
 package com.avaliveru.missionconnected;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.Toast;
 
+import com.avaliveru.missionconnected.ui.AllClubEventsActivity;
+import com.avaliveru.missionconnected.ui.AllClubsActivity;
+import com.avaliveru.missionconnected.ui.ClubsDetailsActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -11,6 +19,10 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 public class MainActivity extends AppCompatActivity {
+
+
+
+    private MenuItem mClubsTabAddClubMenuItem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,4 +39,36 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(navView, navController);
     }
+
+    /*
+    *Create a App Menu button to add new clubs
+    */
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.myclubs_tab_menu, menu);
+        mClubsTabAddClubMenuItem = menu.findItem(R.id.mybutton);
+        mClubsTabAddClubMenuItem.setVisible(false);
+        return true;
+    }
+
+    // handle button activities
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.mybutton) {
+                //String clubID = getIntent().getStringExtra("clubName");
+                Intent newIntent = new Intent(MainActivity.this, AllClubsActivity.class);
+                //newIntent.putExtra("clubID", clubID);
+                startActivity(newIntent);
+        }
+        return super.onOptionsItemSelected(item);
+    }
+    public MenuItem getmClubsTabAddClubMenuItem() {
+        return mClubsTabAddClubMenuItem;
+    }
+    /*
+    END Create a App Menu button to add new clubs
+    */
+
 }
