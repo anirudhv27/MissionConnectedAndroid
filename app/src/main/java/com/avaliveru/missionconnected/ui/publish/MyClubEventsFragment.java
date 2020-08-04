@@ -202,7 +202,7 @@ public class MyClubEventsFragment extends Fragment {
                             cal.get(Calendar.DAY_OF_MONTH) + "/" + cal.get(Calendar.YEAR);
 
                     Bundle b = new Bundle();
-                    b.putString("clubName", holder.eventClub.getText().toString());
+                    b.putString("clubName", holder.eventClub.getText().toString().trim());
                     b.putString("eventName", currEvent.eventName);
                     b.putString("eventDescription", currEvent.eventDescription);
                     b.putString("eventClubID", currEvent.eventClub);
@@ -259,7 +259,7 @@ public class MyClubEventsFragment extends Fragment {
                                 cal.get(Calendar.DAY_OF_MONTH) + "/" + cal.get(Calendar.YEAR);
 
                         Bundle b = new Bundle();
-                        b.putString("clubName", eventClub.getText().toString());
+                        b.putString("clubName", eventClub.getText().toString().trim());
                         b.putString("eventName", event.eventName);
                         b.putString("eventDescription", event.eventDescription);
                         b.putString("eventClubID", event.eventClub);

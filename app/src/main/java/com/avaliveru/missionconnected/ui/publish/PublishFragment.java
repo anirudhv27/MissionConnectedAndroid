@@ -42,6 +42,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class PublishFragment extends Fragment {
@@ -171,33 +172,37 @@ public class PublishFragment extends Fragment {
                 @Override
                 public void onClick(View view) {
                     //viewPager.setCurrentItem(1);
-                    if (viewPager.getCurrentItem() == 1) {
-                        AddEventFragment addEventFragment = (AddEventFragment) pagerAdapter.createFragment(1);
+                    tabLayout.getTabAt(2).select();
 
-                        Bundle b = new Bundle();
-
-                        b.putString("clubName", currClub.clubName);
-                        b.putString("eventClubID", currClub.clubID);
-                        b.putBoolean("isFromEdit", false);
-
-                        addEventFragment.setArguments(b);
-
-                        getChildFragmentManager().beginTransaction().detach(addEventFragment).attach(addEventFragment).commit();
-
-                    } else {
-                        tabLayout.getTabAt(1).select();
-
-                        AddEventFragment addEventFragment = (AddEventFragment) pagerAdapter.createFragment(1);
-
-                        //make a bundle
-                        Bundle b = new Bundle();
-
-                        b.putString("clubName", currClub.clubName);
-                        b.putString("eventClubID", currClub.clubID);
-                        b.putBoolean("isFromEdit", false);
-
-                        addEventFragment.setArguments(b);
+                    UpdateClubsFragment updateClubsFragment = (UpdateClubsFragment) pagerAdapter.createFragment(2);
+                    if (updateClubsFragment.clubName != null) {
+                        updateClubsFragment.clubName.setText(currClub.clubName);
                     }
+                    if (updateClubsFragment.clubImage != null) {
+                        Glide.with(getContext()).load(Uri.parse(currClub.clubImageURL)).into(updateClubsFragment.clubImage);
+                    }
+                    if (updateClubsFragment.clubDescription != null) {
+                        updateClubsFragment.clubDescription.getEditText().setText(currClub.clubDescription);
+                    }
+                    if (updateClubsFragment.clubPreview != null) {
+                        updateClubsFragment.clubPreview.getEditText().setText(currClub.clubPreview);
+                    }
+                    if (updateClubsFragment.pickOfficers != null) {
+                        ArrayList<String> clubOfficerNames = new ArrayList<>();
+
+                    }
+                    updateClubsFragment.clubID = currClub.clubID;
+
+                    //make a bundle
+                    Bundle b = new Bundle();
+
+                    b.putString("clubName", currClub.clubName);
+                    b.putString("clubID", currClub.clubID);
+                    b.putString("clubPreview", currClub.clubPreview);
+                    b.putString("clubDescription", currClub.clubDescription);
+                    b.putString("clubImageURL", currClub.clubImageURL);
+
+                    updateClubsFragment.setArguments(b);
                 }
             });
         }

@@ -19,13 +19,18 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <AutoCompleteTextView
+                <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
-                    android:id="@+id/clubNameInput"
-                    android:completionThreshold="1"
-                    android:hint="Type Club Name Here"/>
+                    app:errorEnabled="true"
+                    android:layout_margin="10dp">
+                    <AutoCompleteTextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:completionThreshold="1"
+                        android:hint="Club Name"
+                        android:id="@+id/clubNameInput"/>
+                </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
@@ -40,14 +45,18 @@
                         android:hint="Club Preview" />
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <MultiAutoCompleteTextView
+                <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Pick Officers"
-                    android:layout_margin="10dp"
-                    android:completionThreshold="1"
-                    android:id="@+id/pickOfficersInput"/>
-
+                    app:errorEnabled="true"
+                    android:layout_margin="10dp">
+                    <MultiAutoCompleteTextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Pick Officer"
+                        android:completionThreshold="1"
+                        android:id="@+id/pickOfficersInput"/>
+                </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"

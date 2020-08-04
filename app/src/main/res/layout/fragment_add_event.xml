@@ -23,17 +23,15 @@
                     android:layout_height="wrap_content"
                     app:errorEnabled="true"
                     android:layout_margin="10dp"
-                    android:id="@+id/eventClubInput"
-                    android:focusable="false"
                     app:hintTextColor="#000">
 
-                    <com.google.android.material.textfield.TextInputEditText
+                    <AutoCompleteTextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:enabled="false"
                         android:hint="Club Name"
                         android:textColor="#000"
-                        android:inputType="none"/>
+                        android:completionThreshold="1"
+                        android:id="@+id/eventClubInput"/>
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout

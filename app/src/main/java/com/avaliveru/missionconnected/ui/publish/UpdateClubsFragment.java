@@ -13,6 +13,7 @@ import android.os.storage.StorageManager;
 import android.provider.ContactsContract;
 import android.text.InputType;
 import android.text.TextUtils;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -58,7 +59,9 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -70,19 +73,15 @@ public class UpdateClubsFragment extends Fragment {
     public TextInputLayout clubDescription;
     public ImageButton clubImage;
     public Button updateButton;
+    public String clubID;
 
     private ScrollView scrollView;
     private Uri mImageUri;
 
     private static final int PICK_IMAGE_REQUEST = 2;
 
-    private HashMap<String, String> allUsersDict;
-
     private ArrayList<String> userNames;
     private ArrayList<String> userIDs;
-    private ArrayList<String> clubOfficerIDs;
-    private ArrayList<String> clubOfficerNames;
-    private String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
     @Nullable
     @Override
@@ -98,13 +97,8 @@ public class UpdateClubsFragment extends Fragment {
         scrollView = root.findViewById(R.id.updateClubScrollView);
 
         fetchUsers();
-        fetchClubOfficerIDs();
-        fetchClubOfficerNames();
 
-        ArrayAdapter<String> clubAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, clubOfficerNames);
-        clubName.setAdapter(clubAdapter);
-
-        ArrayAdapter<String> userAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, userNames);
+        ArrayAdapter<String> userAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, userNames);
         pickOfficers.setAdapter(userAdapter);
         pickOfficers.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
 
@@ -114,19 +108,18 @@ public class UpdateClubsFragment extends Fragment {
                 openFileChooser();
             }
         });
-        /*
         updateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (TextUtils.isEmpty(clubName.getEditText().getText().toString().trim())) {
-                    clubName.setError("Please select a club from the list.");
-                } else if (TextUtils.isEmpty(clubPreview.getEditText().getText().toString().trim())) {
-                    clubPreview.setError("Please write a short preview about your club.");
+                if (TextUtils.isEmpty(clubName.getText().toString().trim())) {
+                    clubName.setError("Please select a club from above.");
                 } else if (TextUtils.isEmpty(pickOfficers.getText().toString().trim())) {
-                    pickOfficers.setError("Please pick officers of your club.");
+                    pickOfficers.setError("Please Pick Officers Below");
+                } else if (TextUtils.isEmpty(clubPreview.getEditText().getText().toString().trim())) {
+                    clubPreview.setError("Please write a short Preview of your club");
                 } else if (TextUtils.isEmpty(clubDescription.getEditText().getText().toString().trim())) {
-                    clubDescription.setError("Please write a description of your club, including meeting times, room numbers, and contact info");
-                } else if (mImageUri.toString() == "") {
+                    clubDescription.setError("Please write a description of all important event details.");
+                } else if (mImageUri == null) {
 
                 } else {
 
@@ -136,14 +129,8 @@ public class UpdateClubsFragment extends Fragment {
                     final StorageReference imageRef = storageRef.child("eventimages").child(imageName);
 
                     if (mImageUri.toString().split("/")[2].equals("firebasestorage.googleapis.com")) {
-                        edit(mImageUri.toString(), eventID);
-
-                        eventClub.getEditText().setText("");
-                        eventName.getEditText().setText("");
-                        eventDate.getEditText().setText("");
-                        eventPreview.getEditText().setText("");
-                        eventDescription.getEditText().setText("");
-                        eventImageButton.setImageBitmap(null);
+                        update(mImageUri.toString(), clubID);
+                        clubID = "";
 
                         scrollView.setFocusableInTouchMode(true);
                         scrollView.fullScroll(View.FOCUS_UP);
@@ -155,13 +142,8 @@ public class UpdateClubsFragment extends Fragment {
                                     @Override
                                     public void onSuccess(Uri uri) {
                                         String downloadUrl = uri.toString();
-                                        edit(downloadUrl, eventID);
-                                        eventClub.getEditText().setText("");
-                                        eventName.getEditText().setText("");
-                                        eventDate.getEditText().setText("");
-                                        eventPreview.getEditText().setText("");
-                                        eventDescription.getEditText().setText("");
-                                        eventImageButton.setImageBitmap(null);
+                                        update(downloadUrl, clubID);
+                                        clubID = "";
 
                                         scrollView.setFocusableInTouchMode(true);
                                         scrollView.fullScroll(View.FOCUS_UP);
@@ -178,8 +160,75 @@ public class UpdateClubsFragment extends Fragment {
                 }
             }
         });
-*/
+
         return root;
+    }
+
+    private void update(final String downloadURL, final String clubID) {
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference eventsRef = ref.child("schools").child("missionsanjosehigh").child("events");
+        final DatabaseReference clubsRef = ref.child("schools").child("missionsanjosehigh").child("clubs").child(clubID);
+        final DatabaseReference userRef = ref.child("users");
+
+        clubsRef.child("events").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                HashMap<String, Boolean> eventsDict = (HashMap<String, Boolean>) snapshot.getValue();
+                final Set<String> eventNames;
+                if (eventsDict != null) {
+                    eventNames = eventsDict.keySet();
+                } else {
+                    eventNames = new HashSet<>();
+                }
+
+                clubsRef.child("club_preview").setValue(clubPreview.getEditText().getText().toString().trim());
+                clubsRef.child("club_description").setValue(clubDescription.getEditText().getText().toString().trim());
+                clubsRef.child("club_image_url").setValue(downloadURL);
+                final String[] officers = pickOfficers.getText().toString().split("\\s*,\\s*");
+                final ArrayList<String> officerIDs = new ArrayList<>();
+                for (String officer : officers) {
+                    officerIDs.add(userIDs.get(userNames.indexOf(officer)));
+                }
+
+                userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        for (DataSnapshot child : snapshot.getChildren()) {
+                            if (officerIDs.contains(child.getKey())) {
+                                userRef.child(child.getKey()).child("clubs").child(clubID).setValue("Officer");
+                            } else {
+                                if (child.child("clubs").hasChild(clubID)) {
+                                    userRef.child(child.getKey()).child("clubs").child(clubID).setValue("Member");
+                                }
+                            }
+
+                            for (String eventID : eventNames) {
+                                if (child.child("events").hasChild(eventID)) {
+                                    if (officerIDs.contains(child.getKey())) {
+                                        userRef.child(child.getKey()).child("events").child(eventID).child("member_status").setValue("Officer");
+                                    } else {
+                                        userRef.child(child.getKey()).child("events").child(eventID).child("member_status").setValue("Member");
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) { }
+                });
+
+                clubName.setText("");
+                pickOfficers.setText("");
+                clubPreview.getEditText().setText("");
+                clubDescription.getEditText().setText("");
+                clubImage.setImageBitmap(null);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) { }
+        });
     }
 
     private void fetchUsers() {
@@ -200,42 +249,6 @@ public class UpdateClubsFragment extends Fragment {
         });
     }
 
-    private void fetchClubOfficerIDs() {
-        clubOfficerIDs = new ArrayList<>();
-        FirebaseDatabase.getInstance().getReference().child("users")
-                .child(uid).child("clubs").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                for (DataSnapshot child : snapshot.getChildren()) {
-                    if (child.getValue().toString().equals("Officer")) clubOfficerIDs.add(child.getKey());
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) { }
-        });
-    }
-
-    private void fetchClubOfficerNames() {
-        clubOfficerNames = new ArrayList<>();
-        FirebaseDatabase.getInstance().getReference().child("schools")
-                .child("missionsanjosehigh").child("clubs").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                for (DataSnapshot child : snapshot.getChildren()) {
-                    if (clubOfficerIDs.contains(child.getKey())) {
-                        clubOfficerNames.add(child.child("club_name").getValue().toString());
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-    }
-
     private void openFileChooser() {
         Intent intent = new Intent();
         intent.setType("image/*");
@@ -251,6 +264,35 @@ public class UpdateClubsFragment extends Fragment {
             mImageUri = data.getData();
 
             Picasso.get().load(mImageUri).into(clubImage);
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        clubName.setText("");
+        clubPreview.getEditText().setText("");
+        pickOfficers.setText("");
+        clubDescription.getEditText().setText("");
+        clubImage.setImageBitmap(null);
+        clubID = "";
+
+        scrollView.setFocusableInTouchMode(true);
+        scrollView.fullScroll(View.FOCUS_UP);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Bundle bundle = getArguments();
+        if (bundle != null) {
+            mImageUri = Uri.parse(bundle.getString("clubImageURL"));
+
+            clubID = bundle.getString("clubID");
+            clubName.setText(bundle.getString("clubName"));
+            Glide.with(getContext()).load(Uri.parse(bundle.getString("clubImageURL"))).into(clubImage);
+            clubDescription.getEditText().setText(bundle.getString("clubDescription"));
+            clubPreview.getEditText().setText(bundle.getString("clubPreview"));
         }
     }
 }

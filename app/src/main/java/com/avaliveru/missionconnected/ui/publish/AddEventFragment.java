@@ -16,6 +16,8 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.ImageButton;
@@ -36,17 +38,20 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -54,7 +59,7 @@ import static android.app.Activity.RESULT_OK;
 
 public class AddEventFragment extends Fragment {
 
-    public TextInputLayout eventClub;
+    public AutoCompleteTextView eventClub;
     public TextInputLayout eventName;
     public TextInputLayout eventDate;
     public TextInputLayout eventPreview;
@@ -71,6 +76,10 @@ public class AddEventFragment extends Fragment {
     private String currClubName;
     private String currClubID;
     private String eventID;
+    private ArrayList<String> clubIDs;
+    private ArrayList<String> clubNames;
+
+    private String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
     private boolean isFromEdit;
 
@@ -87,6 +96,13 @@ public class AddEventFragment extends Fragment {
         publishButton = root.findViewById(R.id.publishButton);
         scrollView = root.findViewById(R.id.addEventScrollView);
 
+        isFromEdit = false;
+
+        fetchClubOfficerIDs();
+        fetchClubOfficerNames();
+
+        ArrayAdapter<String> clubAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, clubNames);
+        eventClub.setAdapter(clubAdapter);
 
         eventDate.getEditText().setOnClickListener(new View.OnClickListener() {
             @Override
@@ -123,7 +139,7 @@ public class AddEventFragment extends Fragment {
         publishButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (TextUtils.isEmpty(eventClub.getEditText().getText().toString().trim())) {
+                if (TextUtils.isEmpty(eventClub.getText().toString().trim())) {
                     eventClub.setError("Please select a club from above.");
                 } else if (TextUtils.isEmpty(eventName.getEditText().getText().toString().trim())) {
                     eventName.setError("Please name your event.");
@@ -146,7 +162,7 @@ public class AddEventFragment extends Fragment {
 
                         if (mImageUri.toString().split("/")[2].equals("firebasestorage.googleapis.com")) {
                             edit(mImageUri.toString(), eventID);
-                            eventClub.getEditText().setText("");
+                            eventClub.setText("");
                             eventName.getEditText().setText("");
                             eventDate.getEditText().setText("");
                             eventPreview.getEditText().setText("");
@@ -164,7 +180,7 @@ public class AddEventFragment extends Fragment {
                                         public void onSuccess(Uri uri) {
                                             String downloadUrl = uri.toString();
                                             edit(downloadUrl, eventID);
-                                            eventClub.getEditText().setText("");
+                                            eventClub.setText("");
                                             eventName.getEditText().setText("");
                                             eventDate.getEditText().setText("");
                                             eventPreview.getEditText().setText("");
@@ -194,7 +210,7 @@ public class AddEventFragment extends Fragment {
                                     public void onSuccess(Uri uri) {
                                         String downloadUrl = uri.toString();
                                         create(downloadUrl);
-                                        eventClub.getEditText().setText("");
+                                        eventClub.setText("");
                                         eventName.getEditText().setText("");
                                         eventDate.getEditText().setText("");
                                         eventPreview.getEditText().setText("");
@@ -210,7 +226,7 @@ public class AddEventFragment extends Fragment {
                             @Override
                             public void onFailure(@NonNull Exception e) {
                                 System.out.println("FAILED");
-                                eventClub.getEditText().setText("");
+                                eventClub.setText("");
                                 eventName.getEditText().setText("");
                                 eventDate.getEditText().setText("");
                                 eventPreview.getEditText().setText("");
@@ -229,6 +245,42 @@ public class AddEventFragment extends Fragment {
         return root;
     }
 
+    private void fetchClubOfficerIDs() {
+        clubIDs = new ArrayList<>();
+        FirebaseDatabase.getInstance().getReference().child("users")
+                .child(uid).child("clubs").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot child : snapshot.getChildren()) {
+                    if (child.getValue().toString().equals("Officer")) clubIDs.add(child.getKey());
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) { }
+        });
+    }
+
+    private void fetchClubOfficerNames() {
+        clubNames = new ArrayList<>();
+        FirebaseDatabase.getInstance().getReference().child("schools")
+                .child("missionsanjosehigh").child("clubs").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot child : snapshot.getChildren()) {
+                    if (clubIDs.contains(child.getKey())) {
+                        clubNames.add(child.child("club_name").getValue().toString());
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
     private void edit(String downloadUrl, String key) {
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
         DatabaseReference eventsRef = ref.child("schools").child("missionsanjosehigh").child("events");
@@ -238,10 +290,10 @@ public class AddEventFragment extends Fragment {
         String[] date = eventDate.getEditText().getText().toString().split("/");
         eventsRef.child(key).child("event_date").setValue(date[0] + "-" + date[1] + "-" + date[2]);
 
-        eventsRef.child(key).child("event_name").setValue(eventName.getEditText().getText().toString());
+        eventsRef.child(key).child("event_name").setValue(eventName.getEditText().getText().toString().trim());
         eventsRef.child(key).child("event_club").setValue(currClubID);
-        eventsRef.child(key).child("event_description").setValue(eventDescription.getEditText().getText().toString());
-        eventsRef.child(key).child("event_preview").setValue(eventPreview.getEditText().getText().toString());
+        eventsRef.child(key).child("event_description").setValue(eventDescription.getEditText().getText().toString().trim());
+        eventsRef.child(key).child("event_preview").setValue(eventPreview.getEditText().getText().toString().trim());
         eventsRef.child(key).child("member_numbers").setValue(0);
     }
 
@@ -257,10 +309,10 @@ public class AddEventFragment extends Fragment {
         String[] date = eventDate.getEditText().getText().toString().split("/");
         eventsRef.child(key).child("event_date").setValue(date[0] + "-" + date[1] + "-" + date[2]);
 
-        eventsRef.child(key).child("event_name").setValue(eventName.getEditText().getText().toString());
+        eventsRef.child(key).child("event_name").setValue(eventName.getEditText().getText().toString().trim());
         eventsRef.child(key).child("event_club").setValue(currClubID);
-        eventsRef.child(key).child("event_description").setValue(eventDescription.getEditText().getText().toString());
-        eventsRef.child(key).child("event_preview").setValue(eventPreview.getEditText().getText().toString());
+        eventsRef.child(key).child("event_description").setValue(eventDescription.getEditText().getText().toString().trim());
+        eventsRef.child(key).child("event_preview").setValue(eventPreview.getEditText().getText().toString().trim());
         eventsRef.child(key).child("member_numbers").setValue(0);
 
         clubsRef.child(currClubID).child("events").child(key).setValue(true);
@@ -303,7 +355,7 @@ public class AddEventFragment extends Fragment {
             isFromEdit = bundle.getBoolean("isFromEdit");
             currClubID = bundle.getString("eventClubID");
             currClubName = bundle.getString("clubName");
-            eventClub.getEditText().setText(currClubName);
+            eventClub.setText(currClubName);
 
             if (isFromEdit) {
                 eventID = bundle.getString("eventID");
@@ -315,7 +367,6 @@ public class AddEventFragment extends Fragment {
                 eventDescription.getEditText().setText(bundle.getString("eventDescription"));
 
                 Glide.with(getActivity()).load(mImageUri).into(eventImageButton);
-
             }
         } else {
             isFromEdit = false;
@@ -325,12 +376,14 @@ public class AddEventFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        eventClub.getEditText().setText("");
+        eventClub.setText("");
         eventName.getEditText().setText("");
         eventDate.getEditText().setText("");
         eventPreview.getEditText().setText("");
         eventDescription.getEditText().setText("");
         eventImageButton.setImageBitmap(null);
+
+        isFromEdit = false;
 
         scrollView.setFocusableInTouchMode(true);
         scrollView.fullScroll(View.FOCUS_UP);
