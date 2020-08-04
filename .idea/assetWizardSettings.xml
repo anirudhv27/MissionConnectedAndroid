@@ -3,6 +3,11 @@
   <component name="WizardSettings">
     <option name="children">
       <map>
+        <entry key="imageWizard">
+          <value>
+            <PersistentState />
+          </value>
+        </entry>
         <entry key="vectorWizard">
           <value>
             <PersistentState>
@@ -18,7 +23,7 @@
                                 <PersistentState>
                                   <option name="values">
                                     <map>
-                                      <entry key="url" value="jar:file:/Applications/Android%20Studio.app/Contents/plugins/android/lib/android.jar!/images/material/icons/materialicons/people/baseline_people_24.xml" />
+                                      <entry key="url" value="jar:file:/snap/android-studio/91/android-studio/plugins/android/lib/android.jar!/images/material/icons/materialicons/assignment_ind/baseline_assignment_ind_24.xml" />
                                     </map>
                                   </option>
                                 </PersistentState>
@@ -28,7 +33,8 @@
                         </option>
                         <option name="values">
                           <map>
-                            <entry key="outputName" value="ic_baseline_people_24" />
+                            <entry key="color" value="3fa33f" />
+                            <entry key="outputName" value="ic_baseline_avatar_24" />
                           </map>
                         </option>
                       </PersistentState>
