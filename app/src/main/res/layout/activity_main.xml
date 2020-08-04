@@ -22,7 +22,7 @@
         android:layout_gravity="start"
         android:layout_marginRight="100dp"
         android:layout_marginTop="0dp"
-         app:menu="@menu/nav_drawer_menu">
+        app:menu="@menu/nav_drawer_menu">
     </com.google.android.material.navigation.NavigationView>
 </androidx.drawerlayout.widget.DrawerLayout>
 

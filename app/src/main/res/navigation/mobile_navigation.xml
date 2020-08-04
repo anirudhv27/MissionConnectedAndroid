@@ -28,6 +28,11 @@
         android:name="com.avaliveru.missionconnected.ui.navdrawer.SupportFragment"
         android:label="Support"
         tools:layout="@layout/fragment_support" />
+    <fragment
+        android:id="@+id/navigation_drawer_policy"
+        android:name="com.avaliveru.missionconnected.ui.navdrawer.PolicyFragment"
+        android:label="Privacy Policy"
+        tools:layout="@layout/fragment_policy" />
 
     <fragment
         android:id="@+id/navigation_drawer_signout"

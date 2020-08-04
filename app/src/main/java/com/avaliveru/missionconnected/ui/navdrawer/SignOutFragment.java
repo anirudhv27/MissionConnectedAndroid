@@ -23,6 +23,8 @@ import com.avaliveru.missionconnected.ui.AllClubsActivity;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class SignOutFragment extends Fragment {
@@ -42,17 +44,30 @@ public class SignOutFragment extends Fragment {
         alertDialog2.setPositiveButton("YES",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        FirebaseAuth.getInstance().signOut();
-                        Intent i = new Intent(getActivity(), GoogleSignInActivity.class);
-                        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK |
-                                Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        startActivity(i);
+
+                        GoogleSignInClient mGoogleSignInClient ;
+                        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                                .requestIdToken(getString(R.string.default_web_client_id))
+                                .requestEmail()
+                                .build();
+                        mGoogleSignInClient = GoogleSignIn.getClient(getContext(), gso);
+                        mGoogleSignInClient.signOut().addOnCompleteListener(getActivity(), new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                FirebaseAuth.getInstance().signOut();
+                                Intent i = new Intent(getActivity(), GoogleSignInActivity.class);
+                                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK |
+                                        Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                startActivity(i);
+                            }
+                        });
                     }
                 });
          alertDialog2.setNegativeButton("NO",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.cancel();
+                        getActivity().onBackPressed();
                     }
                 });
          alertDialog2.show();

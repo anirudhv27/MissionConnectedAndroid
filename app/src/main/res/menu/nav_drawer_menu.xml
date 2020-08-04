@@ -3,31 +3,31 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/navigation_home"
-            android:icon="@drawable/ic_home_black_24dp"
+            android:icon="@drawable/ic_round_home_green_24"
             android:title="@string/title_home" />
         <item
             android:id="@+id/navigation_clubs"
-            android:icon="@drawable/ic_baseline_people_24"
+            android:icon="@drawable/ic_baseline_people_green_24"
             android:title="@string/title_clubs" />
         <item
             android:id="@+id/navigation_publish"
-            android:icon="@drawable/ic_baseline_publish_24"
+            android:icon="@drawable/ic_baseline_publish_green_24"
             android:title="@string/title_publish" />
         <item
             android:id="@+id/navigation_drawer_support"
-            android:icon="@drawable/ic_home_black_24dp"
+            android:icon="@drawable/ic_baseline_contact_support_green_24"
             android:title="Support" />
         <item
             android:id="@+id/navigation_drawer_policy"
-            android:icon="@drawable/ic_home_black_24dp"
+            android:icon="@drawable/ic_baseline_privacy_green_24"
             android:title="Privacy Policy" />
         <item
             android:id="@+id/navigation_drawer_version"
-            android:icon="@drawable/ic_home_black_24dp"
+            android:icon="@drawable/ic_baseline_version_tree_24"
             android:title="Version 1.0" />
       <item
             android:id="@+id/navigation_drawer_signout"
-            android:icon="@drawable/ic_baseline_people_24"
+            android:icon="@drawable/ic_baseline_logout_green_24"
             android:title="LogOut" />
     </group>
 
