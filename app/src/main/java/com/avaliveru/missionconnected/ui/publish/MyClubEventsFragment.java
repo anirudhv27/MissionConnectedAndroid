@@ -1,5 +1,6 @@
 package com.avaliveru.missionconnected.ui.publish;
 
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -20,10 +21,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.avaliveru.missionconnected.R;
 import com.avaliveru.missionconnected.dataModels.Event;
 import com.avaliveru.missionconnected.ui.EventsDetailsActivity;
+import com.avaliveru.missionconnected.ui.home.EventsAdapter;
 import com.bumptech.glide.Glide;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.firebase.ui.database.SnapshotParser;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -32,125 +36,77 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.TimeZone;
 
 public class MyClubEventsFragment extends Fragment {
     private RecyclerView recyclerView;
-    private FirebaseRecyclerAdapter adapter;
 
-    private void fetchEvents() {
-        final DatabaseReference rootRef = FirebaseDatabase.getInstance()
+    private ArrayList<String> eventIDs;
+    private ArrayList<Event> events;
+    private RecyclerView.Adapter mAdapter;
+
+    private void fetchEventIDs() {
+        eventIDs = new ArrayList<>();
+        DatabaseReference rootRef = FirebaseDatabase.getInstance()
                 .getReference();
-        //TODO: Get user id key from Firebase
-        final DatabaseReference myEventNamesRef = rootRef.child("users").child("t8AKiEV08yVulfouZM9xAA1gCCC3").child("events");
-        final DatabaseReference eventDetailRef = FirebaseDatabase.getInstance()
-                .getReference()
-                .child("schools").child("missionsanjosehigh").child("events");
 
-        //TODO 1: Figure out some way to only find events with date after today ,might need to adjust database :(
-        FirebaseRecyclerOptions<Boolean> options =
-                new FirebaseRecyclerOptions.Builder<Boolean>()
-                        .setQuery(myEventNamesRef, new SnapshotParser<Boolean>() {
-                            @NonNull
-                            @Override
-                            public Boolean parseSnapshot(@NonNull DataSnapshot snapshot) {
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        DatabaseReference myEventNamesRef = rootRef.child("users").child(currentUser.getUid()).child("events");
 
-                                if (snapshot.child("member_status").getValue().toString().equals("Officer")) {
-                                    return true;
-                                } else {
-                                    return false;
-                                }
-                            }
-                        })
-                        .build();
-
-        adapter = new FirebaseRecyclerAdapter<Boolean, ViewHolder>(options) {
+        myEventNamesRef.addValueEventListener(new ValueEventListener() {
             @Override
-            protected void onBindViewHolder(@NonNull final ViewHolder holder, int position, @NonNull final Boolean model) {
-                String key = this.getRef(position).getKey();
-                eventDetailRef.child(key).addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull final DataSnapshot snapshot) {
-                        holder.event = new Event();
-                        holder.event.eventID = snapshot.getKey();
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot childSnapshot : snapshot.getChildren()) {
+                    if (childSnapshot.child("member_status").getValue().toString().equals("Officer")) {
+                        eventIDs.add(childSnapshot.getKey());
+                    }
+                }
+            }
 
-                        String eventImageURL = "https://www.androidpolice.com/wp-content/uploads/2015/03/nexus2cee_an.png";
-                        try {
-                            eventImageURL = snapshot.child("event_image_url").getValue().toString();
-                            holder.event.eventImageURL = eventImageURL;
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                        String eventName = snapshot.child("event_name").getValue().toString();
-                        holder.event.eventName = eventName;
-                        String eventClub = snapshot.child("event_club").getValue().toString();
-                        holder.event.eventClub = eventClub;
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) { }
+        });
+    }
+
+    private void fetchEventsList() {
+        events = new ArrayList<>();
+        DatabaseReference eventDetailRef = FirebaseDatabase.getInstance().getReference().child("schools").child("missionsanjosehigh").child("events");
+        eventDetailRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot childSnapshot : snapshot.getChildren()) {
+                    if (eventIDs.contains(childSnapshot.getKey())) {
+                        Event event = new Event();
+                        event.eventID = childSnapshot.getKey();
+                        event.eventImageURL = childSnapshot.child("event_image_url").getValue().toString();
+                        event.eventName = childSnapshot.child("event_name").getValue().toString();
+                        event.eventClub = childSnapshot.child("event_club").getValue().toString();
+                        event.eventDescription = childSnapshot.child("event_description").getValue().toString();
+                        event.eventPreview = childSnapshot.child("event_preview").getValue().toString();
+                        event.numberOfAttendees = Integer.parseInt(childSnapshot.child("member_numbers").getValue().toString());
 
                         SimpleDateFormat df = new SimpleDateFormat("MM-dd-yyyy");
-                        Date eventDate = null;
                         try {
-                            eventDate = df.parse(snapshot.child("event_date").getValue().toString());
+                            event.eventDate = df.parse(childSnapshot.child("event_date").getValue().toString());
                         } catch (ParseException e) {
                             e.printStackTrace();
                         }
 
-                        holder.event.eventDate = eventDate;
-                        holder.event.eventPreview = snapshot.child("event_preview").getValue().toString();
-                        holder.event.eventDescription = snapshot.child("event_description").getValue().toString();
-
-
-                        rootRef.child("clubs").child(eventClub).addValueEventListener(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                holder.setEventClubTitle(snapshot.child("club_name").getValue().toString());
-                            }
-
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError error) {
-                                holder.setEventClubTitle("No Club Available :(");
-                            }
-                        });
-
-                        holder.setEventDateTitle(eventDate);
-                        holder.setEventNameTitle(eventName);
-                        holder.setImage(eventImageURL);
-
-                        holder.root.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                final Intent intent = new Intent(MyClubEventsFragment.this.getContext(), EventsDetailsActivity.class);
-                                String eventID = snapshot.getKey();
-                                intent.putExtra("eventName", eventID);
-                                myEventNamesRef.child(eventID).child("isGoing").addListenerForSingleValueEvent(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                        boolean isGoing = (boolean) snapshot.getValue();
-                                        intent.putExtra("isGoing", isGoing);
-                                        MyClubEventsFragment.this.startActivity(intent);
-                                    }
-
-                                    @Override
-                                    public void onCancelled(@NonNull DatabaseError error) { }
-                                });
-                            }
-                        });
+                        events.add(event);
                     }
+                }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) { }
-                });
+                mAdapter = new PublishEventsAdapter(events);
+                recyclerView.setAdapter(mAdapter);
             }
 
-            @NonNull
             @Override
-            public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_events_list_publish_item, parent, false);
-                return new ViewHolder(view);
-            }
-        };
-        recyclerView.setAdapter(adapter);
+            public void onCancelled(@NonNull DatabaseError error) { }
+        });
     }
 
     @Nullable
@@ -163,104 +119,176 @@ public class MyClubEventsFragment extends Fragment {
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setHasFixedSize(true);
 
-        fetchEvents();
+        //fetchEvents();
+        fetchEventIDs();
+        fetchEventsList();
 
         return root;
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        adapter.startListening();
-    }
+    private class PublishEventsAdapter extends RecyclerView.Adapter<PublishEventsAdapter.ViewHolder> {
+        ArrayList<Event> events;
 
-    @Override
-    public void onStop() {
-        super.onStop();
-        adapter.stopListening();
-    }
+        public PublishEventsAdapter(ArrayList<Event> events) {
+            this.events = events;
+            Collections.sort(events);
+        }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
-        public RelativeLayout root;
-        public ImageView image;
-        public TextView eventName;
-        public TextView eventClub;
-        public TextView eventDate;
-        public Button editButton;
+        @NonNull
+        @Override
+        public PublishEventsAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_events_list_publish_item, parent, false);
+            return new ViewHolder(view);
+        }
 
-        public Event event;
+        @Override
+        public void onBindViewHolder(@NonNull final PublishEventsAdapter.ViewHolder holder, int position) {
+            final DatabaseReference rootRef = FirebaseDatabase.getInstance()
+                    .getReference();
 
-        public ViewHolder(View itemView) {
-            super(itemView);
-            image = itemView.findViewById(R.id.eventPublishImageView);
-            eventName = itemView.findViewById(R.id.eventPublishNameTextField);
-            eventClub = itemView.findViewById(R.id.eventPublishClubTextField);
-            eventDate = itemView.findViewById(R.id.eventPublishDateTextField);
-            root = itemView.findViewById(R.id.event_publish_list_root);
+            FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+            final DatabaseReference myEventNamesRef = rootRef.child("users").child(currentUser.getUid()).child("events");
+            final Event currEvent = events.get(position);
 
-            editButton = itemView.findViewById(R.id.editButton);
+            rootRef.child("clubs").child(currEvent.eventClub).addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    holder.setEventClubTitle(snapshot.child("club_name").getValue().toString());
+                }
 
-            editButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    holder.setEventClubTitle("No Club Available :(");
+                }
+            });
+
+            holder.setEventNameTitle(currEvent.eventName);
+            holder.setEventDateTitle(currEvent.eventDate);
+            holder.setImage(currEvent.eventImageURL);
+            holder.root.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    final Intent intent = new Intent(getContext(), EventsDetailsActivity.class);
+                    String eventID = currEvent.eventID;
+                    intent.putExtra("eventName", eventID);
+                    myEventNamesRef.child(eventID).child("isGoing").addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            boolean isGoing = (boolean) snapshot.getValue();
+                            intent.putExtra("isGoing", isGoing);
+                            getContext().startActivity(intent);
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) { }
+                    });
+                }
+            });
+
+            holder.editButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     PublishFragment pubFrag = (PublishFragment) getParentFragment();
                     pubFrag.viewPager.setCurrentItem(1);
 
-                    //viewPager.setCurrentItem(1);
                     pubFrag.tabLayout.getTabAt(1).select();
                     AddEventFragment addEventFragment = (AddEventFragment) pubFrag.pagerAdapter.createFragment(1);
 
-                    //addEventFragment.currClubID = event.eventClub;
-                    //addEventFragment.currClubName = eventClub.getText().toString();
-                    //addEventFragment.eventName.getEditText().setText(event.eventName);
-                    //addEventFragment.eventPreview.getEditText().setText(event.eventPreview);
-
-                    //Glide.with(pubFrag.getActivity()).load(event.eventImageURL).into(addEventFragment.eventImageButton);
-                    //addEventFragment.mImageUri = Uri.parse(event.eventImageURL);
-
-                    //addEventFragment.eventID = event.eventID;
-                    //addEventFragment.eventDescription.getEditText().setText(event.eventDescription);
 
                     Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("Los Angeles"));
-                    cal.setTime(event.eventDate);
+                    cal.setTime(currEvent.eventDate);
 
                     String dateString = cal.get(Calendar.MONTH) + "/" +
                             cal.get(Calendar.DAY_OF_MONTH) + "/" + cal.get(Calendar.YEAR);
 
-                    //addEventFragment.eventDate.getEditText().setText(dateString);
-
                     Bundle b = new Bundle();
-                    b.putString("clubName", eventClub.getText().toString());
-                    b.putString("eventName", event.eventName);
-                    b.putString("eventDescription", event.eventDescription);
-                    b.putString("eventClubID", event.eventClub);
-                    b.putString("eventID", event.eventID);
-                    b.putString("eventImageURL", event.eventImageURL);
-                    b.putString("eventPreview", event.eventPreview);
+                    b.putString("clubName", holder.eventClub.getText().toString());
+                    b.putString("eventName", currEvent.eventName);
+                    b.putString("eventDescription", currEvent.eventDescription);
+                    b.putString("eventClubID", currEvent.eventClub);
+                    b.putString("eventID", currEvent.eventID);
+                    b.putString("eventImageURL", currEvent.eventImageURL);
+                    b.putString("eventPreview", currEvent.eventPreview);
                     b.putString("eventDate", dateString);
                     b.putBoolean("isFromEdit", true);
 
                     addEventFragment.setArguments(b);
-
-                    //getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.addEventFragment, addEventFragment).commit();
                 }
             });
         }
 
-        public void setEventNameTitle(String string) {
-            eventName.setText(string);
-        }
-        public void setEventClubTitle(String string) {
-            eventClub.setText(string);
+        @Override
+        public int getItemCount() {
+            return events.size();
         }
 
-        public void setEventDateTitle(Date date) {
-            SimpleDateFormat df = new SimpleDateFormat("MMM dd, yyyy");
-            eventDate.setText(df.format(date));
-        }
+        public class ViewHolder extends RecyclerView.ViewHolder {
+            public RelativeLayout root;
+            public ImageView image;
+            public TextView eventName;
+            public TextView eventClub;
+            public TextView eventDate;
+            public Button editButton;
 
-        public void setImage(String imageURL) {
-            Glide.with(getContext()).load(Uri.parse(imageURL)).into(image);
+            public Event event;
+
+            public ViewHolder(View itemView) {
+                super(itemView);
+                image = itemView.findViewById(R.id.eventPublishImageView);
+                eventName = itemView.findViewById(R.id.eventPublishNameTextField);
+                eventClub = itemView.findViewById(R.id.eventPublishClubTextField);
+                eventDate = itemView.findViewById(R.id.eventPublishDateTextField);
+                root = itemView.findViewById(R.id.event_publish_list_root);
+
+                editButton = itemView.findViewById(R.id.editButton);
+
+                editButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        PublishFragment pubFrag = (PublishFragment) getParentFragment();
+                        pubFrag.viewPager.setCurrentItem(1);
+
+                        //viewPager.setCurrentItem(1);
+                        pubFrag.tabLayout.getTabAt(1).select();
+                        AddEventFragment addEventFragment = (AddEventFragment) pubFrag.pagerAdapter.createFragment(1);
+
+                        Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("Los Angeles"));
+                        cal.setTime(event.eventDate);
+
+                        String dateString = cal.get(Calendar.MONTH) + "/" +
+                                cal.get(Calendar.DAY_OF_MONTH) + "/" + cal.get(Calendar.YEAR);
+
+                        Bundle b = new Bundle();
+                        b.putString("clubName", eventClub.getText().toString());
+                        b.putString("eventName", event.eventName);
+                        b.putString("eventDescription", event.eventDescription);
+                        b.putString("eventClubID", event.eventClub);
+                        b.putString("eventID", event.eventID);
+                        b.putString("eventImageURL", event.eventImageURL);
+                        b.putString("eventPreview", event.eventPreview);
+                        b.putString("eventDate", dateString);
+                        b.putBoolean("isFromEdit", true);
+
+                        addEventFragment.setArguments(b);
+                    }
+                });
+            }
+
+            public void setEventNameTitle(String string) {
+                eventName.setText(string);
+            }
+            public void setEventClubTitle(String string) {
+                eventClub.setText(string);
+            }
+
+            public void setEventDateTitle(Date date) {
+                SimpleDateFormat df = new SimpleDateFormat("MMM dd, yyyy");
+                eventDate.setText(df.format(date));
+            }
+
+            public void setImage(String imageURL) {
+                Glide.with(getContext()).load(Uri.parse(imageURL)).into(image);
+            }
         }
     }
 }

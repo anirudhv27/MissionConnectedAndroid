@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/updateClubFragment">
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/updateClubScrollView">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <AutoCompleteTextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:id="@+id/clubNameInput"
+                    android:completionThreshold="1"
+                    android:hint="Type Club Name Here"/>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:errorEnabled="true"
+                    android:layout_margin="10dp"
+                    android:id="@+id/clubPreviewInput">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Club Preview" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <MultiAutoCompleteTextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Pick Officers"
+                    android:layout_margin="10dp"
+                    android:completionThreshold="1"
+                    android:id="@+id/pickOfficersInput"/>
+
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:errorEnabled="true"
+                    android:layout_margin="10dp"
+                    android:id="@+id/clubDescInput">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Club Description"
+                        android:inputType="textMultiLine" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:text="Club Image"
+                    android:textColor="#9B9B9B"
+                    android:textSize="17dp" />
+
+                <ImageButton
+                    android:id="@+id/clubImageChooser"
+                    android:layout_width="match_parent"
+                    android:layout_height="250dp"
+                    android:layout_marginHorizontal="10dp"
+                    android:scaleType="centerCrop"
+                    android:tooltipText="Click here to pick an image!"/>
+
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:background="#3FA33F"
+                    android:text="Update Club"
+                    android:textStyle="bold"
+                    android:textColor="#FFFFFF"
+                    android:id="@+id/updateButton"/>
+            </LinearLayout>
+        </ScrollView>
+    </RelativeLayout>
+</RelativeLayout>

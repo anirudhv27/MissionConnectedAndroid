@@ -87,28 +87,6 @@ public class AddEventFragment extends Fragment {
         publishButton = root.findViewById(R.id.publishButton);
         scrollView = root.findViewById(R.id.addEventScrollView);
 
-        Bundle bundle = getArguments();
-        if (bundle != null) {
-            isFromEdit = bundle.getBoolean("isFromEdit");
-            currClubID = bundle.getString("eventClubID");
-            currClubName = bundle.getString("clubName");
-            eventClub.getEditText().setText(currClubName);
-
-            if (isFromEdit) {
-                eventID = bundle.getString("eventID");
-                mImageUri = Uri.parse(bundle.getString("eventImageURL"));
-
-                eventName.getEditText().setText(bundle.getString("eventName"));
-                eventDate.getEditText().setText(bundle.getString("eventDate"));
-                eventPreview.getEditText().setText(bundle.getString("eventPreview"));
-                eventDescription.getEditText().setText(bundle.getString("eventDescription"));
-
-                Glide.with(getActivity()).load(mImageUri).into(eventImageButton);
-
-            }
-        } else {
-            isFromEdit = false;
-        }
 
         eventDate.getEditText().setOnClickListener(new View.OnClickListener() {
             @Override

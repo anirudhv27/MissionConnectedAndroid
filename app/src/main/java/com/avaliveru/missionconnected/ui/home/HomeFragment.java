@@ -3,6 +3,7 @@ package com.avaliveru.missionconnected.ui.home;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,72 +47,14 @@ import java.util.Set;
 
 public class HomeFragment extends Fragment {
 
-    private HomeViewModel homeViewModel;
-    private FirebaseRecyclerAdapter adapter;
     private RecyclerView recyclerView;
     private TabLayout tabLayout;
     private ViewPager2 viewPager;
 
-    private void fetchClubs() {
-        DatabaseReference rootRef = FirebaseDatabase.getInstance()
-                .getReference();
-        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-        DatabaseReference myClubNamesRef = rootRef.child("users").child(currentUser.getUid()).child("clubs");
-        final DatabaseReference clubDetailsRef= FirebaseDatabase.getInstance()
-                .getReference()
-                .child("schools").child("missionsanjosehigh").child("clubs");
+    private ArrayList<String> clubIDs;
+    private ArrayList<Club> clubs;
+    private RecyclerView.Adapter mAdapter;
 
-        FirebaseRecyclerOptions<Boolean> options =
-                new FirebaseRecyclerOptions.Builder<Boolean>()
-                        .setQuery(myClubNamesRef, new SnapshotParser<Boolean>() {
-                            @NonNull
-                            @Override
-                            public Boolean parseSnapshot(@NonNull DataSnapshot snapshot) {
-                                if (snapshot.getValue().toString().equals("Officer") || snapshot.getValue().toString().equals("Member")) {
-                                    return true;
-                                } else {
-                                    return false;
-                                }
-                            }
-                        })
-                        .build();
-
-        adapter = new FirebaseRecyclerAdapter<Boolean, ViewHolder>(options) {
-            @Override
-            protected void onBindViewHolder(@NonNull final ViewHolder holder, int position, @NonNull final Boolean model) {
-                String key = this.getRef(position).getKey();
-                clubDetailsRef.child(key).addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull final DataSnapshot snapshot) {
-                        holder.setTextTitle(snapshot.child("club_name").getValue().toString());
-                        holder.setImage(snapshot.child("club_image_url").getValue().toString());
-
-                        holder.root.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                Intent intent = new Intent(HomeFragment.this.getContext(), ClubsDetailsActivity.class);
-                                intent.putExtra("clubName", snapshot.getKey());
-                                intent.putExtra("isMyClub", true);
-                                HomeFragment.this.startActivity(intent);
-                            }
-                        });
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) { }
-                });
-            }
-
-            @NonNull
-            @Override
-            public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_myclubslistitem, parent, false);
-                return new ViewHolder(view);
-            }
-        };
-
-        recyclerView.setAdapter(adapter);
-    }
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
@@ -119,11 +62,13 @@ public class HomeFragment extends Fragment {
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false);
 
         recyclerView = root.findViewById(R.id.myClubsRecyclerView);
+        fetchClubIDs();
+        fetchClubList();
+
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setHasFixedSize(true);
 
-        fetchClubs();
-
+        //fetchClubs();
         tabLayout = root.findViewById(R.id.homeTabLayout);
         viewPager = root.findViewById(R.id.myClubsViewPager);
         HomeViewPagerAdapter adapter = new HomeViewPagerAdapter(getActivity().getSupportFragmentManager(), getLifecycle());
@@ -147,37 +92,116 @@ public class HomeFragment extends Fragment {
         return root;
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        adapter.startListening();
+    private void fetchClubIDs() {
+        clubIDs = new ArrayList<>();
+
+        DatabaseReference rootRef = FirebaseDatabase.getInstance()
+                .getReference();
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        DatabaseReference myClubNamesRef = rootRef.child("users").child(currentUser.getUid()).child("clubs");
+        myClubNamesRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot childSnapshot : snapshot.getChildren()) {
+                    if (childSnapshot.getValue().toString().equals("Member") || childSnapshot.getValue().toString().equals("Officer")) {
+                        clubIDs.add(childSnapshot.getKey());
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) { }
+        });
     }
 
-    @Override
-    public void onStop() {
-        super.onStop();
-        adapter.stopListening();
+    private void fetchClubList() {
+        clubs = new ArrayList<>();
+
+        DatabaseReference clubDetailsRef= FirebaseDatabase.getInstance()
+                .getReference()
+                .child("schools").child("missionsanjosehigh").child("clubs");
+        clubDetailsRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot childSnapshot : snapshot.getChildren()) {
+                    if (clubIDs.contains(childSnapshot.getKey())) {
+                        Club club = new Club();
+                        club.clubID = childSnapshot.getKey();
+                        club.clubName = childSnapshot.child("club_name").getValue().toString();
+                        club.clubImageURL = childSnapshot.child("club_image_url").getValue().toString();
+                        club.clubPreview = childSnapshot.child("club_preview").getValue().toString();
+                        club.clubDescription = childSnapshot.child("club_description").getValue().toString();
+                        club.numberOfMembers = Integer.parseInt(childSnapshot.child("member_numbers").getValue().toString());
+
+                        clubs.add(club);
+                    }
+                }
+
+                mAdapter = new HomeClubAdapter(clubs);
+                recyclerView.setAdapter(mAdapter);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) { }
+        });
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
-        public RelativeLayout root;
-        public ImageView image;
-        public TextView clubName;
-        public Club club;
+    private class HomeClubAdapter extends RecyclerView.Adapter<HomeClubAdapter.ViewHolder> {
 
-        public ViewHolder(View itemView) {
-            super(itemView);
-            image = itemView.findViewById(R.id.clubimage);
-            clubName = itemView.findViewById(R.id.clubname);
-            root = itemView.findViewById(R.id.my_clubs_list_root);
+        ArrayList<Club> clubs;
+
+        public HomeClubAdapter(ArrayList<Club> clubs) {
+            this.clubs = clubs;
         }
 
-        public void setTextTitle(String string) {
-            clubName.setText(string);
+        @NonNull
+        @Override
+        public HomeClubAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_myclubslistitem, parent, false);
+            return new ViewHolder(view);
         }
 
-        public void setImage(String imageURL) {
-           Glide.with(getContext()).load(Uri.parse(imageURL)).into(image);
+        @Override
+        public void onBindViewHolder(@NonNull HomeClubAdapter.ViewHolder holder, int position) {
+            final Club currClub = clubs.get(position);
+            holder.setImage(currClub.clubImageURL);
+            holder.setTextTitle(currClub.clubName);
+            holder.root.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(HomeFragment.this.getContext(), ClubsDetailsActivity.class);
+                    intent.putExtra("clubName", currClub.clubID);
+                    intent.putExtra("isMyClub", true);
+                    HomeFragment.this.startActivity(intent);
+                }
+            });
+        }
+
+        @Override
+        public int getItemCount() {
+            return clubs.size();
+        }
+
+        public class ViewHolder extends RecyclerView.ViewHolder {
+            public RelativeLayout root;
+            public ImageView image;
+            public TextView clubName;
+            public Club club;
+
+            public ViewHolder(View itemView) {
+                super(itemView);
+                image = itemView.findViewById(R.id.clubimage);
+                clubName = itemView.findViewById(R.id.clubname);
+                root = itemView.findViewById(R.id.my_clubs_list_root);
+            }
+
+            public void setTextTitle(String string) {
+                clubName.setText(string);
+            }
+
+            public void setImage(String imageURL) {
+                Glide.with(getContext()).load(Uri.parse(imageURL)).into(image);
+            }
         }
     }
 }

@@ -68,7 +68,7 @@ public class ClubsDetailsActivity extends AppCompatActivity {
                 club.clubPreview = snapshot.child("club_preview").getValue().toString();
                 club.clubImageURL = snapshot.child("club_image_url").getValue().toString();
                 club.clubName = snapshot.child("club_name").getValue().toString();
-                club.numberOfMembers = (long) snapshot.child("member_numbers").getValue();
+                club.numberOfMembers = Integer.parseInt(snapshot.child("member_numbers").getValue().toString());
 
                 clubNameTextView.setText(club.clubName);
                 clubDescriptionTextView.setText(club.clubDescription);
