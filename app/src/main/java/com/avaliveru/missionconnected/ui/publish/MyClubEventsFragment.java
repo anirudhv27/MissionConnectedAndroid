@@ -150,7 +150,7 @@ public class MyClubEventsFragment extends Fragment {
             final DatabaseReference myEventNamesRef = rootRef.child("users").child(currentUser.getUid()).child("events");
             final Event currEvent = events.get(position);
 
-            rootRef.child("clubs").child(currEvent.eventClub).addValueEventListener(new ValueEventListener() {
+            rootRef.child("schools").child("missionsanjosehigh").child("clubs").child(currEvent.eventClub).addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     holder.setEventClubTitle(snapshot.child("club_name").getValue().toString());
