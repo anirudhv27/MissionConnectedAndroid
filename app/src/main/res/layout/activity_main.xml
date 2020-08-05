@@ -24,5 +24,6 @@
         android:layout_marginTop="0dp"
         app:menu="@menu/nav_drawer_menu">
     </com.google.android.material.navigation.NavigationView>
+
 </androidx.drawerlayout.widget.DrawerLayout>
 

@@ -50,14 +50,15 @@ public class MainActivity extends AppCompatActivity {
 
         drawerLayout = findViewById(R.id.navigation_layout);
         navigationView = findViewById ( R.id.navigation_view_drawer );
-        mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.navigation_drawer_support,  R.id.navigation_drawer_policy,R.id.navigation_drawer_signout)
+        mAppBarConfiguration = new AppBarConfiguration.Builder(R.id.navigation_home, R.id.navigation_clubs,
+                R.id.navigation_publish, R.id.navigation_drawer_support,
+                R.id.navigation_drawer_policy,R.id.navigation_drawer_signout)
                 .setDrawerLayout(drawerLayout)
                 .build();
 
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
-        NavigationUI.setupWithNavController( navigationView, navController);
+        NavigationUI.setupWithNavController(navigationView, navController);
 
         bottomNavigation = findViewById(R.id.nav_view);
         NavigationUI.setupWithNavController(bottomNavigation, navController);
@@ -78,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
 
         if(getSupportActionBar() != null) {
             getSupportActionBar().setDisplayShowTitleEnabled(true);
-          // getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
           // getSupportActionBar().setHomeButtonEnabled(true);
         }
 
@@ -87,12 +88,12 @@ public class MainActivity extends AppCompatActivity {
 
             public void onDrawerClosed(View view) {
                 super.onDrawerClosed(view);
-                invalidateOptionsMenu();
+                //invalidateOptionsMenu();
             }
 
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
-                invalidateOptionsMenu();
+                //invalidateOptionsMenu();
             }
 
             @Override
@@ -101,8 +102,7 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
-
-
+        //toggle.setDrawerIndicatorEnabled(false);
 
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
@@ -117,6 +117,7 @@ public class MainActivity extends AppCompatActivity {
     /*********************************************************
     *Create a App Menu button to add new clubs
     */
+    /*
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.myclubs_tab_menu, menu);
@@ -134,6 +135,7 @@ public class MainActivity extends AppCompatActivity {
                 Intent newIntent = new Intent(MainActivity.this, AllClubsActivity.class);
                 startActivity(newIntent);
         }
+
         return super.onOptionsItemSelected(item);
     }
     public MenuItem getmClubsTabAddClubMenuItem() {

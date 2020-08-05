@@ -27,6 +27,7 @@ import com.avaliveru.missionconnected.R;
 import com.avaliveru.missionconnected.dataModels.Club;
 import com.avaliveru.missionconnected.dataModels.Event;
 import com.avaliveru.missionconnected.ui.AllClubEventsActivity;
+import com.avaliveru.missionconnected.ui.AllClubsActivity;
 import com.avaliveru.missionconnected.ui.ClubsDetailsActivity;
 import com.avaliveru.missionconnected.ui.EventsDetailsActivity;
 import com.avaliveru.missionconnected.ui.home.AllFragment;
@@ -34,6 +35,7 @@ import com.bumptech.glide.Glide;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.firebase.ui.database.SnapshotParser;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -54,6 +56,7 @@ import java.util.Set;
 public class ClubsTabFragment extends Fragment {
     private RecyclerView recyclerView;
     private FirebaseRecyclerAdapter adapter;
+    private FloatingActionButton addClubsButton;
 
     private Set<String> myClubNames = new HashSet<>();
 
@@ -67,12 +70,20 @@ public class ClubsTabFragment extends Fragment {
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setHasFixedSize(true);
 
+        addClubsButton = root.findViewById(R.id.addClubsButton);
+        addClubsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent newIntent = new Intent(getContext(), AllClubsActivity.class);
+                startActivity(newIntent);
+            }
+        });
+        addClubsButton.setVisibility(View.VISIBLE);
+
         fetchMyClubs();
 
         return root;
     }
-
-
 
     private void fetchMyClubs() {
         DatabaseReference rootRef = FirebaseDatabase.getInstance()
@@ -142,14 +153,14 @@ public class ClubsTabFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        (((MainActivity) getActivity()).getmClubsTabAddClubMenuItem()).setVisible(true);
+        //(((MainActivity) getActivity()).getmClubsTabAddClubMenuItem()).setVisible(true);
         adapter.startListening();
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        (((MainActivity) getActivity()).getmClubsTabAddClubMenuItem()).setVisible(false);
+        //(((MainActivity) getActivity()).getmClubsTabAddClubMenuItem()).setVisible(false);
         adapter.stopListening();
     }
 

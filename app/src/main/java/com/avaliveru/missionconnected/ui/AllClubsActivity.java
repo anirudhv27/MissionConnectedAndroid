@@ -23,6 +23,7 @@ import com.bumptech.glide.Glide;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.firebase.ui.database.SnapshotParser;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -35,6 +36,7 @@ public class AllClubsActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private FirebaseRecyclerAdapter adapter;
     private String clubID;
+    private FloatingActionButton addClubsButton;
     private static final int REQUEST_EXIT = 2 ;
 
     @Override
@@ -47,6 +49,9 @@ public class AllClubsActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.myClubsTabRecyclerView);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setHasFixedSize(true);
+        addClubsButton = findViewById(R.id.addClubsButton);
+        addClubsButton.setVisibility(View.GONE);
+
         fetchMyClubs();
     }
 
