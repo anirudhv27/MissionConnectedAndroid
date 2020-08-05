@@ -6,28 +6,25 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
+import android.widget.ImageView;
+import android.widget.TextView;
 
-import com.avaliveru.missionconnected.ui.AllClubEventsActivity;
-import com.avaliveru.missionconnected.ui.AllClubsActivity;
-import com.avaliveru.missionconnected.ui.ClubsDetailsActivity;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.navigation.NavigationView;
-import com.google.firebase.database.annotations.Nullable;
-
-import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.navigation.NavController;
-import androidx.navigation.NavDestination;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
-import java.util.Objects;
+import com.avaliveru.missionconnected.ui.AllClubsActivity;
+import com.bumptech.glide.Glide;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -37,6 +34,9 @@ public class MainActivity extends AppCompatActivity {
     private NavigationView navigationView;
     private AppBarConfiguration mAppBarConfiguration;
     private BottomNavigationView bottomNavigation;
+    private ImageView profileImage;
+    private TextView profileName;
+    private TextView profileSchool;
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
@@ -51,8 +51,8 @@ public class MainActivity extends AppCompatActivity {
         drawerLayout = findViewById(R.id.navigation_layout);
         navigationView = findViewById ( R.id.navigation_view_drawer );
         mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.navigation_drawer_support, R.id.navigation_drawer_signout)
-                .setDrawerLayout( drawerLayout)
+                R.id.navigation_drawer_support,  R.id.navigation_drawer_policy,R.id.navigation_drawer_signout)
+                .setDrawerLayout(drawerLayout)
                 .build();
 
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
@@ -61,6 +61,20 @@ public class MainActivity extends AppCompatActivity {
 
         bottomNavigation = findViewById(R.id.nav_view);
         NavigationUI.setupWithNavController(bottomNavigation, navController);
+
+        navigationView.removeHeaderView(navigationView.getHeaderView(0));
+        View navHeaderView = navigationView.inflateHeaderView ( R.layout.nav_drawer_header_main);
+
+        profileImage = navHeaderView.findViewById ( R.id.nav_head_avatar );
+        profileName =  navHeaderView.findViewById ( R.id.nav_head_username );
+        profileSchool=  navHeaderView.findViewById ( R.id.nav_head_school );
+
+        FirebaseUser loginUser = FirebaseAuth.getInstance().getCurrentUser();
+        Glide.with(MainActivity.this)
+                .load(loginUser.getPhotoUrl())
+                .into(profileImage);
+        profileName.setText(loginUser.getDisplayName());
+        profileSchool.setText("Mission San Jose High");
 
         if(getSupportActionBar() != null) {
             getSupportActionBar().setDisplayShowTitleEnabled(true);
@@ -86,16 +100,12 @@ public class MainActivity extends AppCompatActivity {
                 super.onDrawerSlide(drawerView, slideOffset);
             }
         };
+
+
+
+
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
-
-       // View navView = navigationView.inflateHeaderView ( R.layout.navigation_header_layout);
-        //NavProfileImage = navView.findViewById ( R.id.nav_profile_image );
-        //NavProfileFullName =  navView.findViewById ( R.id.nav_user_full_name );
-       // NavProfileEmail =  navView.findViewById ( R.id.nav_user_email );
-
-        //Handle visibility of the application bottom navigation
-
     }
     @Override
     public boolean onSupportNavigateUp() {
@@ -121,9 +131,7 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         if (id == R.id.mybutton) {
-                //String clubID = getIntent().getStringExtra("clubName");
                 Intent newIntent = new Intent(MainActivity.this, AllClubsActivity.class);
-                //newIntent.putExtra("clubID", clubID);
                 startActivity(newIntent);
         }
         return super.onOptionsItemSelected(item);

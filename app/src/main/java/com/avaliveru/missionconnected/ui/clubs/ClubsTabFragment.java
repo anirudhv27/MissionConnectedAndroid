@@ -62,9 +62,7 @@ public class ClubsTabFragment extends Fragment {
 
         super.onCreateView(inflater, container, savedInstanceState);
         View root = inflater.inflate(R.layout.fragment_clubs, container, false);
-
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
-
         recyclerView = root.findViewById(R.id.myClubsTabRecyclerView);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setHasFixedSize(true);

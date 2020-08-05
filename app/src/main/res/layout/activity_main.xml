@@ -14,13 +14,15 @@
         android:layout_height="wrap_content" />
 
     <com.google.android.material.navigation.NavigationView
+        app:headerLayout="@layout/nav_drawer_header_main"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:id="@+id/navigation_view_drawer"
-        android:layout_width="150dp"
-        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
         android:layout_gravity="start"
         android:layout_marginRight="100dp"
-        android:layout_marginTop="50dp"
-         app:menu="@menu/nav_drawer_menu">
+        android:layout_marginTop="0dp"
+        app:menu="@menu/nav_drawer_menu">
     </com.google.android.material.navigation.NavigationView>
 </androidx.drawerlayout.widget.DrawerLayout>
 
