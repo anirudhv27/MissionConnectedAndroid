@@ -107,7 +107,7 @@ public class AllClubEventsActivity extends AppCompatActivity {
                             e.printStackTrace();
                         }
 
-                        rootRef.child("clubs").child(eventClub).addValueEventListener(new ValueEventListener() {
+                        rootRef.child("schools").child("missionsanjosehigh").child("clubs").child(eventClub).addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot snapshot) {
                                 holder.setEventClubTitle(snapshot.child("club_name").getValue().toString());
