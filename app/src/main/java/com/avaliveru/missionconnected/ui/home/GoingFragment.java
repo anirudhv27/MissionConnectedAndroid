@@ -85,7 +85,7 @@ public class GoingFragment extends Fragment {
                         event.eventClub = childSnapshot.child("event_club").getValue().toString();
                         event.eventDescription = childSnapshot.child("event_description").getValue().toString();
                         event.eventPreview = childSnapshot.child("event_preview").getValue().toString();
-                        //event.numberOfAttendees = Integer.parseInt(childSnapshot.child("member_numbers").getValue().toString());
+                        event.numberOfAttendees = Integer.parseInt(childSnapshot.child("member_numbers").getValue().toString());
 
                         SimpleDateFormat df = new SimpleDateFormat("MM-dd-yyyy");
                         try {
