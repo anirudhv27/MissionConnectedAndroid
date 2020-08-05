@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,6 +34,7 @@ public class PolicyFragment extends Fragment {
         mViewModel =
                 ViewModelProviders.of(this).get(PolicyViewModel.class);
         final TextView textView = root.findViewById(R.id.text_support);
+        //textView.setMovementMethod(LinkMovementMethod.getInstance());
         mViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
             @Override
             public void onChanged(@Nullable String s) {
