@@ -72,7 +72,7 @@ public class ClubsDetailsActivity extends AppCompatActivity {
 
                 clubNameTextView.setText(club.clubName);
                 clubDescriptionTextView.setText(club.clubDescription);
-                memberTextView.setText("Members: " + new Long(club.numberOfMembers).toString());
+                memberTextView.setText("Members: " + club.numberOfMembers);
                 Glide.with(ClubsDetailsActivity.this).load(Uri.parse(club.clubImageURL)).into(clubImageView);
             }
 

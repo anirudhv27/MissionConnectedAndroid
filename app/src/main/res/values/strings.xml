@@ -12,4 +12,9 @@
     <string name="firebase_status_fmt">userid</string>
     <string name="home_navigation_drawer_open">Open Navigation drawer</string>
     <string name="home_navigation_drawer_close">Close Navigation drawer</string>
+    <string name="support_message">Mission Connect aims to facilitate communication between school clubs and make it easier for clubs to communicate with their members. A secondary goal is to make it much easier for schools to manage the club registration process, as we also include an easy way to tabulate club information.\n\n For further information, visit:</string>
+    <string name="linkwebite">
+        <a href="https://avaliveru.wixsite.com/missionconnect">\nhttps://avaliveru.wixsite.com/missionconnect</a>
+    </string>
+    <string name="support_outro">\nAny enquiries please contact missionconnectedapp@gmail.com</string>
 </resources>

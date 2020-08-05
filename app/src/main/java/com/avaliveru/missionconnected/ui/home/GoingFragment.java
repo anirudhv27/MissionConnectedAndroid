@@ -117,11 +117,24 @@ public class GoingFragment extends Fragment {
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setHasFixedSize(true);
 
-        fetchEventIDs();
-        fetchEventsList();
+        //fetchEventIDs();
+        //fetchEventsList();
 
         //fetchEvents();
 
         return root;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        fetchEventIDs();
+        fetchEventsList();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
     }
 }

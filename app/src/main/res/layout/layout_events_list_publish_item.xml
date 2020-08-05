@@ -59,18 +59,21 @@
 
 
             <Button
-                android:layout_width="70dp"
-                android:layout_height="match_parent"
-                android:layout_margin="7dp"
-                android:layout_marginEnd="10dp"
-                android:layout_centerVertical="true"
+                android:id="@+id/editButton"
+                android:layout_width="73dp"
+                android:layout_height="34dp"
                 android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="7dp"
+                android:layout_marginLeft="7dp"
+                android:layout_marginTop="7dp"
+                android:layout_marginEnd="7dp"
+                android:layout_marginRight="4dp"
+                android:layout_marginBottom="7dp"
                 android:background="#3FA33F"
                 android:text="Edit"
                 android:textColor="#FFFFFF"
-                android:textStyle="bold"
-                android:id="@+id/editButton"
-                android:layout_marginRight="10dp" />
+                android:textStyle="bold" />
 
         </RelativeLayout>
 

@@ -1,6 +1,8 @@
 package com.avaliveru.missionconnected.ui.navdrawer;
 
 import android.os.Bundle;
+import android.text.method.LinkMovementMethod;
+import android.text.method.MovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,23 +19,15 @@ import com.avaliveru.missionconnected.R;
 
 public class SupportFragment extends Fragment {
 
-    private SupportViewModel supportViewModel;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
         super.onCreateView(inflater, container, savedInstanceState);
         View root = inflater.inflate(R.layout.fragment_support, container, false);
-
-        supportViewModel =
-                ViewModelProviders.of(this).get(SupportViewModel.class);
         final TextView textView = root.findViewById(R.id.text_support);
-        supportViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
-            @Override
-            public void onChanged(@Nullable String s) {
-                textView.setText(s);
-            }
-        });
+        textView.setText(getString(R.string.support_message) + getString(R.string.linkwebite) + getString(R.string.support_outro));
+        textView.setMovementMethod(LinkMovementMethod.getInstance());
         return root;
     }
 }

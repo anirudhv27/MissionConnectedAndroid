@@ -71,11 +71,11 @@ public class EventsDetailsActivity extends AppCompatActivity {
                 event.eventPreview = snapshot.child("event_preview").getValue().toString();
                 event.eventImageURL = snapshot.child("event_image_url").getValue().toString();
                 event.eventName = snapshot.child("event_name").getValue().toString();
-                //event.numberOfAttendees = (long) snapshot.child("member_numbers").getValue();
+                event.numberOfAttendees = Integer.parseInt(snapshot.child("member_numbers").getValue().toString());
 
                 eventNameTextView.setText(event.eventName);
                 eventDescriptionTextView.setText(event.eventDescription);
-                memberTextView.setText("Members: " + new Long(event.numberOfAttendees).toString());
+                memberTextView.setText("Number of Attendees: " + event.numberOfAttendees);
                 Glide.with(EventsDetailsActivity.this).load(Uri.parse(event.eventImageURL)).into(eventImageView);
             }
 
