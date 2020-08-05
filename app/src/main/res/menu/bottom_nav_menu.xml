@@ -2,16 +2,17 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/navigation_home"
-        android:icon="@drawable/ic_home_black_24dp"
+        android:icon="@drawable/ic_round_home_green_24"
         android:title="@string/title_home" />
 
     <item
-        android:id="@+id/navigation_publish"
-        android:icon="@drawable/ic_baseline_publish_24"
-        android:title="@string/title_publish" />
-    <item
         android:id="@+id/navigation_clubs"
-        android:icon="@drawable/ic_baseline_people_24"
-        android:title="@string/title_clubs" />
+        android:icon="@drawable/ic_baseline_people_green_24"
+        android:title="@string/title_clubs"/>
+
+    <item
+        android:id="@+id/navigation_publish"
+        android:icon="@drawable/ic_baseline_publish_green_24"
+        android:title="@string/title_publish" />
 
 </menu>
