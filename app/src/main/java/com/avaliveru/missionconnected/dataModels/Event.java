@@ -11,7 +11,7 @@ public class Event implements Comparable<Event>{
     public String eventID;
     public String eventPreview;
     public Date eventDate;
-    public long numberOfAttendees;
+    public int numberOfAttendees;
 
     @Override
     public int compareTo(Event event) {
@@ -19,7 +19,7 @@ public class Event implements Comparable<Event>{
         else if (eventDate.equals(event.eventDate)){
             return eventName.compareTo(event.eventName);
         } else {
-            return eventDate.compareTo(event.eventDate);
+            return event.eventDate.compareTo(eventDate);
         }
     }
 }

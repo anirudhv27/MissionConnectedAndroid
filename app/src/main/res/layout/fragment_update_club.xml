@@ -9,29 +9,27 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/addEventFragment">
+        android:id="@+id/updateClubFragment">
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/addEventScrollView">
+            android:id="@+id/updateClubScrollView">
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
+
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:errorEnabled="true"
-                    android:layout_margin="10dp"
-                    app:hintTextColor="#000">
-
+                    android:layout_margin="10dp">
                     <AutoCompleteTextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="Club Name"
-                        android:textColor="#000"
                         android:completionThreshold="1"
-                        android:id="@+id/eventClubInput"/>
+                        android:hint="Club Name"
+                        android:id="@+id/clubNameInput"/>
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
@@ -39,12 +37,25 @@
                     android:layout_height="wrap_content"
                     app:errorEnabled="true"
                     android:layout_margin="10dp"
-                    android:id="@+id/eventNameInput">
+                    android:id="@+id/clubPreviewInput">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="Event Name" />
+                        android:hint="Club Preview" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:errorEnabled="true"
+                    android:layout_margin="10dp">
+                    <MultiAutoCompleteTextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Pick Officer"
+                        android:completionThreshold="1"
+                        android:id="@+id/pickOfficersInput"/>
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
@@ -52,53 +63,25 @@
                     android:layout_height="wrap_content"
                     app:errorEnabled="true"
                     android:layout_margin="10dp"
-                    android:id="@+id/eventDateInput">
+                    android:id="@+id/clubDescInput">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:focusable="false"
-                        android:clickable="true"
-                        android:hint="Event Date"/>
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:errorEnabled="true"
-                    android:layout_margin="10dp"
-                    android:id="@+id/eventPreviewInput">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="Event Preview" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:errorEnabled="true"
-                    android:layout_margin="10dp"
-                    android:id="@+id/eventDescInput">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="Event Description"
-                        android:inputType="textMultiLine"/>
+                        android:hint="Club Description"
+                        android:inputType="textMultiLine" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Event Image"
                     android:layout_margin="10dp"
-                    android:textSize="17dp"
-                    android:textColor="#9B9B9B"/>
+                    android:text="Club Image"
+                    android:textColor="#9B9B9B"
+                    android:textSize="17dp" />
 
                 <ImageButton
-                    android:id="@+id/eventImageChooser"
+                    android:id="@+id/clubImageChooser"
                     android:layout_width="match_parent"
                     android:layout_height="250dp"
                     android:layout_marginHorizontal="10dp"
@@ -110,12 +93,11 @@
                     android:layout_height="wrap_content"
                     android:layout_margin="10dp"
                     android:background="#3FA33F"
-                    android:text="@string/title_publish"
+                    android:text="Update Club"
                     android:textStyle="bold"
                     android:textColor="#FFFFFF"
-                    android:id="@+id/publishButton"/>
+                    android:id="@+id/updateButton"/>
             </LinearLayout>
         </ScrollView>
     </RelativeLayout>
-
 </RelativeLayout>

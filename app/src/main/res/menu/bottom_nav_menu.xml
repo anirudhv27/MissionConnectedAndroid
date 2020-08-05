@@ -6,12 +6,13 @@
         android:title="@string/title_home" />
 
     <item
-        android:id="@+id/navigation_publish"
-        android:icon="@drawable/ic_baseline_publish_24"
-        android:title="@string/title_publish" />
-    <item
         android:id="@+id/navigation_clubs"
         android:icon="@drawable/ic_baseline_people_24"
         android:title="@string/title_clubs" />
+
+    <item
+        android:id="@+id/navigation_publish"
+        android:icon="@drawable/ic_baseline_publish_24"
+        android:title="@string/title_publish" />
 
 </menu>
