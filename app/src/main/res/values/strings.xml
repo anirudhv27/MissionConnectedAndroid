@@ -17,4 +17,7 @@
         <a href="https://avaliveru.wixsite.com/missionconnect">\nhttps://avaliveru.wixsite.com/missionconnect</a>
     </string>
     <string name="support_outro">\nAny enquiries please contact missionconnectedapp@gmail.com</string>
+    <string name="invalid_loginid_alert">Invalid email for this school. Please login with your FUSD GAFE Account.</string>
+    <string name="firebase_auth_error">Firebase authentication failure. Please try again.</string>
+    <string name="general_login_failure_error">Sign In failed. Please try again.</string>
 </resources>
