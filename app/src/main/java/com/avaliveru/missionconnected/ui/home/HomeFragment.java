@@ -128,7 +128,10 @@ public class HomeFragment extends Fragment {
                         Club club = new Club();
                         club.clubID = childSnapshot.getKey();
                         club.clubName = childSnapshot.child("club_name").getValue().toString();
-                        club.clubImageURL = childSnapshot.child("club_image_url").getValue().toString();
+                        if(childSnapshot.child("club_image_url").getValue()!=null)
+                            club.clubImageURL = childSnapshot.child("club_image_url").getValue().toString();
+                        else
+                            club.clubImageURL = "";
                         club.clubPreview = childSnapshot.child("club_preview").getValue().toString();
                         club.clubDescription = childSnapshot.child("club_description").getValue().toString();
                         club.numberOfMembers = Integer.parseInt(childSnapshot.child("member_numbers").getValue().toString());
@@ -200,7 +203,10 @@ public class HomeFragment extends Fragment {
             }
 
             public void setImage(String imageURL) {
-                Glide.with(getContext()).load(Uri.parse(imageURL)).into(image);
+                if(!imageURL.equals(""))
+                    Glide.with(getContext()).load(Uri.parse(imageURL)).into(image);
+                else
+                    image.setImageResource(R.mipmap.ic_login_image);
             }
         }
     }

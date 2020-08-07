@@ -73,7 +73,10 @@ public class ClubsDetailsActivity extends AppCompatActivity {
                 clubNameTextView.setText(club.clubName);
                 clubDescriptionTextView.setText(club.clubDescription);
                 memberTextView.setText("Members: " + club.numberOfMembers);
-                Glide.with(ClubsDetailsActivity.this).load(Uri.parse(club.clubImageURL)).into(clubImageView);
+                if(!club.clubImageURL.equals(""))
+                    Glide.with(ClubsDetailsActivity.this).load(Uri.parse(club.clubImageURL)).into(clubImageView);
+                else
+                    clubImageView.setImageResource(R.mipmap.ic_login_image);
             }
 
             @Override
@@ -98,9 +101,11 @@ public class ClubsDetailsActivity extends AppCompatActivity {
             eventsRef.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    String event = snapshot.getKey();
-                    rootRef.child("users").child(loginUserId)
-                            .child("events").child(event).removeValue();
+                    for (DataSnapshot childSnap : snapshot.getChildren()) {
+                        String event = childSnap.getKey();
+                        rootRef.child("users").child(loginUserId)
+                                .child("events").child(event).removeValue();
+                    }
                 }
 
                 @Override
@@ -122,11 +127,13 @@ public class ClubsDetailsActivity extends AppCompatActivity {
             eventsRef.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    String event = snapshot.getKey();
-                    rootRef.child("users").child(loginUserId)
-                            .child("events").child(event).child("member_status").setValue("Member");
-                    rootRef.child("users").child(loginUserId)
-                            .child("events").child(event).child("isGoing").setValue(false);
+                    for (DataSnapshot childSnap : snapshot.getChildren()) {
+                        String event = childSnap.getKey();
+                        rootRef.child("users").child(loginUserId)
+                                .child("events").child(event).child("member_status").setValue("Member");
+                        rootRef.child("users").child(loginUserId)
+                                .child("events").child(event).child("isGoing").setValue(false);
+                    }
                 }
 
                 @Override

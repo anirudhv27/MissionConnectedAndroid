@@ -172,8 +172,8 @@ public class GoogleSignInActivity extends AppCompatActivity implements View.OnCl
                         usersRef.child(key).child("fullname").setValue(currentUser.getDisplayName());
                         usersRef.child(key).child("isAdmin").setValue(false);
                         usersRef.child(key).child("school").setValue("missionsanjosehigh");
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                            usersRef.child(key).child("imgurl").setValue(Objects.requireNonNull(currentUser.getPhotoUrl()).toString());
+                        if (currentUser.getPhotoUrl()!=null) {
+                            usersRef.child(key).child("imgurl").setValue(currentUser.getPhotoUrl().toString());
                         }
                     }
                 }

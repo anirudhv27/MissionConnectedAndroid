@@ -33,7 +33,10 @@
                 android:layout_toRightOf="@id/clubTabItemImageView"
                 android:paddingLeft="7dp"
                 android:paddingTop="8dp"
-                android:textSize="20dp"
+                android:autoSizeTextType="uniform"
+                android:autoSizeMinTextSize="16dp"
+                android:autoSizeMaxTextSize="20dp"
+                android:autoSizeStepGranularity="1dp"
                 android:textColor="#FF0000"/>
 
             <TextView
