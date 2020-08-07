@@ -8,6 +8,7 @@ import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.storage.StorageManager;
 import android.provider.ContactsContract;
@@ -26,6 +27,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
@@ -83,6 +85,7 @@ public class AddEventFragment extends Fragment {
 
     private boolean isFromEdit;
 
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -103,6 +106,17 @@ public class AddEventFragment extends Fragment {
 
         ArrayAdapter<String> clubAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, clubNames);
         eventClub.setAdapter(clubAdapter);
+
+        eventClub.setOnDismissListener(new AutoCompleteTextView.OnDismissListener() {
+            @Override
+            public void onDismiss() {
+                if (!clubNames.contains(eventClub.getText().toString())) {
+                    eventClub.setText("");
+                } else {
+                    currClubID = clubIDs.get(clubNames.indexOf(eventClub.getText().toString()));
+                }
+            }
+        });
 
         eventDate.getEditText().setOnClickListener(new View.OnClickListener() {
             @Override
@@ -353,11 +367,11 @@ public class AddEventFragment extends Fragment {
         Bundle bundle = getArguments();
         if (bundle != null) {
             isFromEdit = bundle.getBoolean("isFromEdit");
-            currClubID = bundle.getString("eventClubID");
-            currClubName = bundle.getString("clubName");
-            eventClub.setText(currClubName);
 
             if (isFromEdit) {
+                currClubID = bundle.getString("eventClubID");
+                currClubName = bundle.getString("clubName");
+                eventClub.setText(currClubName);
                 eventID = bundle.getString("eventID");
                 mImageUri = Uri.parse(bundle.getString("eventImageURL"));
 
@@ -371,22 +385,6 @@ public class AddEventFragment extends Fragment {
         } else {
             isFromEdit = false;
         }
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        eventClub.setText("");
-        eventName.getEditText().setText("");
-        eventDate.getEditText().setText("");
-        eventPreview.getEditText().setText("");
-        eventDescription.getEditText().setText("");
-        eventImageButton.setImageBitmap(null);
-
-        isFromEdit = false;
-
-        scrollView.setFocusableInTouchMode(true);
-        scrollView.fullScroll(View.FOCUS_UP);
     }
 
     private void openFileChooser() {
