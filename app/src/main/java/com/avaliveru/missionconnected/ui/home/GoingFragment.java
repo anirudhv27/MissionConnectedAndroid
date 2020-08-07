@@ -59,8 +59,10 @@ public class GoingFragment extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot childSnapshot : snapshot.getChildren()) {
-                    if ((boolean) childSnapshot.child("isGoing").getValue()) {
-                        eventIDs.add(childSnapshot.getKey());
+                    if (childSnapshot.child("isGoing").exists()) {
+                        if ((boolean) childSnapshot.child("isGoing").getValue()) {
+                            eventIDs.add(childSnapshot.getKey());
+                        }
                     }
                 }
             }

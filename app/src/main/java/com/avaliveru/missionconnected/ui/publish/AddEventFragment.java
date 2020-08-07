@@ -163,7 +163,7 @@ public class AddEventFragment extends Fragment {
                     eventPreview.setError("Please write a short Preview of your event");
                 } else if (TextUtils.isEmpty(eventDescription.getEditText().getText().toString().trim())) {
                     eventDescription.setError("Please write a description of all important event details.");
-                } else if (mImageUri.toString() == "") {
+                } else if (mImageUri == null) {
 
                 } else {
 
@@ -176,6 +176,7 @@ public class AddEventFragment extends Fragment {
 
                         if (mImageUri.toString().split("/")[2].equals("firebasestorage.googleapis.com")) {
                             edit(mImageUri.toString(), eventID);
+
                             eventClub.setText("");
                             eventName.getEditText().setText("");
                             eventDate.getEditText().setText("");
@@ -331,30 +332,24 @@ public class AddEventFragment extends Fragment {
 
         clubsRef.child(currClubID).child("events").child(key).setValue(true);
 
-        userRef.addChildEventListener(new ChildEventListener() {
+        userRef.addValueEventListener(new ValueEventListener() {
             @Override
-            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                if (snapshot.child("clubs").child(currClubID).exists()) {
-                    if (snapshot.child("clubs").child(currClubID).getValue().equals("Officer")) {
-                        userRef.child(snapshot.getKey()).child("events").child(key)
-                                .child("member_status").setValue("Officer");
-                        userRef.child(snapshot.getKey()).child("events").child(key).child("isGoing").setValue(true);
-                    } else if (snapshot.child("clubs").child(currClubID).getValue().equals("Member")){
-                        userRef.child(snapshot.getKey()).child("events").child(key)
-                                .child("member_status").setValue("Member");
-                        userRef.child(snapshot.getKey()).child("events").child(key).child("isGoing").setValue(false);
+            public void onDataChange(@NonNull DataSnapshot snap) {
+                for (DataSnapshot snapshot : snap.getChildren()) {
+                    if (snapshot.child("clubs").child(currClubID).exists()) {
+                        if (snapshot.child("clubs").child(currClubID).getValue().equals("Officer")) {
+                            userRef.child(snapshot.getKey()).child("events").child(key)
+                                    .child("member_status").setValue("Officer");
+                            userRef.child(snapshot.getKey()).child("events").child(key).child("isGoing").setValue(true);
+
+                        } else if (snapshot.child("clubs").child(currClubID).getValue().equals("Member")){
+                            userRef.child(snapshot.getKey()).child("events").child(key)
+                                    .child("member_status").setValue("Member");
+                            userRef.child(snapshot.getKey()).child("events").child(key).child("isGoing").setValue(false);
+                        }
                     }
                 }
             }
-
-            @Override
-            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) { }
-
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot snapshot) { }
-
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) { }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) { }
