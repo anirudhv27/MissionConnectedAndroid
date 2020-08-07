@@ -223,6 +223,7 @@ public class PublishFragment extends Fragment {
                         });
                         */
                     }
+
                     updateClubsFragment.clubID = currClub.clubID;
 
                     //make a bundle
