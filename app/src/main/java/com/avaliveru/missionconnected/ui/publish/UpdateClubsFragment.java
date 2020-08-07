@@ -80,8 +80,8 @@ public class UpdateClubsFragment extends Fragment {
 
     private static final int PICK_IMAGE_REQUEST = 2;
 
-    private ArrayList<String> userNames;
-    private ArrayList<String> userIDs;
+    public ArrayList<String> userNames;
+    public ArrayList<String> userIDs;
 
     @Nullable
     @Override
@@ -187,6 +187,7 @@ public class UpdateClubsFragment extends Fragment {
                 clubsRef.child("club_image_url").setValue(downloadURL);
                 final String[] officers = pickOfficers.getText().toString().split("\\s*,\\s*");
                 final ArrayList<String> officerIDs = new ArrayList<>();
+
                 for (String officer : officers) {
                     officerIDs.add(userIDs.get(userNames.indexOf(officer)));
                 }
