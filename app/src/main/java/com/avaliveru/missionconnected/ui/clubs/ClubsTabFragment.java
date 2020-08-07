@@ -120,7 +120,11 @@ public class ClubsTabFragment extends Fragment {
                         holder.setClubNameTitle(snapshot.child("club_name").getValue().toString());
                         holder.setClubDescTitle(snapshot.child("club_preview").getValue().toString());
                         holder.setClubMemberStatus(model);
-                        holder.setImage(snapshot.child("club_image_url").getValue().toString());
+                        if(!snapshot.child("club_image_url").getValue().equals(""))
+                            holder.setImage(snapshot.child("club_image_url").getValue().toString());
+                        else
+                            holder.setImageResource(R.mipmap.ic_login_image);
+
 
                         holder.root.setOnClickListener(new View.OnClickListener() {
                             @Override
@@ -195,6 +199,10 @@ public class ClubsTabFragment extends Fragment {
 
         public void setImage(String imageURL) {
             Glide.with(getContext()).load(Uri.parse(imageURL)).into(image);
+        }
+
+        public void setImageResource(int ic_login_image) {
+            image.setImageResource(R.mipmap.ic_login_image);
         }
     }
 }

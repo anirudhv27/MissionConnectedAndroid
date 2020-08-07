@@ -71,9 +71,12 @@ public class MainActivity extends AppCompatActivity {
         profileSchool=  navHeaderView.findViewById ( R.id.nav_head_school );
 
         FirebaseUser loginUser = FirebaseAuth.getInstance().getCurrentUser();
-        Glide.with(MainActivity.this)
+        if(loginUser.getPhotoUrl()!=null)
+            Glide.with(MainActivity.this)
                 .load(loginUser.getPhotoUrl())
                 .into(profileImage);
+        else
+                profileImage.setImageResource(R.mipmap.ic_login_image);
         profileName.setText(loginUser.getDisplayName());
         profileSchool.setText("Mission San Jose High");
 

@@ -95,7 +95,10 @@ public class AllClubsActivity extends AppCompatActivity {
                        }
                        holder.clubName.setText(model.clubName);
                        holder.clubDesc.setText(model.clubPreview);
-                       holder.setImage(model.clubImageURL);
+                       if(!model.clubImageURL.equals(""))
+                            holder.setImage(model.clubImageURL);
+                       else
+                           holder.setImageResource(R.mipmap.ic_login_image);
                        holder.root.setOnClickListener(new View.OnClickListener() {
                            @Override
                            public void onClick(View view) {
@@ -170,6 +173,10 @@ public class AllClubsActivity extends AppCompatActivity {
 
         public void setImage(String imageURL) {
             Glide.with(AllClubsActivity.this).load(Uri.parse(imageURL)).into(image);
+        }
+
+        public void setImageResource(int ic_login_image) {
+            image.setImageResource(ic_login_image);
         }
     }
 }
