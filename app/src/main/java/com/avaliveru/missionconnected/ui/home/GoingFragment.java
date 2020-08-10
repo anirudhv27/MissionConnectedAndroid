@@ -38,6 +38,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 
 public class GoingFragment extends Fragment {
@@ -95,8 +96,14 @@ public class GoingFragment extends Fragment {
                         } catch (ParseException e) {
                             e.printStackTrace();
                         }
+                        Calendar calendar = Calendar.getInstance();
+                        calendar.add(Calendar.DAY_OF_YEAR, -1);
 
-                        events.add(event);
+                        Date yesterday = calendar.getTime();
+
+                        if (event.eventDate.after(yesterday)) {
+                            events.add(event);
+                        }
                     }
                 }
                 mAdapter = new EventsAdapter(getContext(), events);
