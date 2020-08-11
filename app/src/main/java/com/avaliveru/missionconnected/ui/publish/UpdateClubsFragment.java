@@ -1,6 +1,8 @@
 package com.avaliveru.missionconnected.ui.publish;
 
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -66,7 +68,6 @@ import java.util.Set;
 import static android.app.Activity.RESULT_OK;
 
 public class UpdateClubsFragment extends Fragment {
-
     public AutoCompleteTextView clubName;
     public TextInputLayout clubPreview;
     public MultiAutoCompleteTextView pickOfficers;
@@ -93,7 +94,6 @@ public class UpdateClubsFragment extends Fragment {
         clubDescription = root.findViewById(R.id.clubDescInput);
         clubImage = root.findViewById(R.id.clubImageChooser);
         updateButton = root.findViewById(R.id.updateButton);
-
         scrollView = root.findViewById(R.id.updateClubScrollView);
 
         fetchUsers();
@@ -101,7 +101,6 @@ public class UpdateClubsFragment extends Fragment {
         ArrayAdapter<String> userAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, userNames);
         pickOfficers.setAdapter(userAdapter);
         pickOfficers.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
-
         clubImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -112,26 +111,23 @@ public class UpdateClubsFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 if (TextUtils.isEmpty(clubName.getText().toString().trim())) {
-                    clubName.setError("Please select a club from above.");
+                    alert(getString(R.string.empty_club_alert));
                 } else if (TextUtils.isEmpty(pickOfficers.getText().toString().trim())) {
-                    pickOfficers.setError("Please Pick Officers Below");
+                    alert(getString(R.string.empty_officer_alert));
                 } else if (TextUtils.isEmpty(clubPreview.getEditText().getText().toString().trim())) {
-                    clubPreview.setError("Please write a short Preview of your club");
+                    alert(getString(R.string.empty_club_preview_alert));
                 } else if (TextUtils.isEmpty(clubDescription.getEditText().getText().toString().trim())) {
-                    clubDescription.setError("Please write a description of all important event details.");
+                    alert(getString(R.string.empty_club_desc_alert));
                 } else if (mImageUri == null) {
-
+                    alert(getString(R.string.empty_club_image_alert));
                 } else {
-
                     FirebaseStorage storage = FirebaseStorage.getInstance();
                     StorageReference storageRef = storage.getReference();
                     String imageName = "event" + new Date().getTime();
                     final StorageReference imageRef = storageRef.child("eventimages").child(imageName);
-
                     if (mImageUri.toString().split("/")[2].equals("firebasestorage.googleapis.com")) {
                         update(mImageUri.toString(), clubID);
                         clubID = "";
-
                         scrollView.setFocusableInTouchMode(true);
                         scrollView.fullScroll(View.FOCUS_UP);
                     } else {
@@ -144,7 +140,6 @@ public class UpdateClubsFragment extends Fragment {
                                         String downloadUrl = uri.toString();
                                         update(downloadUrl, clubID);
                                         clubID = "";
-
                                         scrollView.setFocusableInTouchMode(true);
                                         scrollView.fullScroll(View.FOCUS_UP);
                                     }
@@ -157,10 +152,10 @@ public class UpdateClubsFragment extends Fragment {
                             }
                         });
                     }
+                    alert(getString(R.string.club_updated_succes_alert));
                 }
             }
         });
-
         return root;
     }
 
@@ -187,11 +182,9 @@ public class UpdateClubsFragment extends Fragment {
                 clubsRef.child("club_image_url").setValue(downloadURL);
                 final String[] officers = pickOfficers.getText().toString().split("\\s*,\\s*");
                 final ArrayList<String> officerIDs = new ArrayList<>();
-
                 for (String officer : officers) {
                     officerIDs.add(userIDs.get(userNames.indexOf(officer)));
                 }
-
                 userRef.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -295,5 +288,18 @@ public class UpdateClubsFragment extends Fragment {
             clubDescription.getEditText().setText(bundle.getString("clubDescription"));
             clubPreview.getEditText().setText(bundle.getString("clubPreview"));
         }
+    }
+    private void alert(String s) {
+        AlertDialog.Builder alertDialog2 = new AlertDialog.Builder(getContext());
+        alertDialog2.setTitle("Alert");
+        alertDialog2.setMessage(s);
+        alertDialog2.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+                PublishFragment pubFrag = (PublishFragment) getParentFragment();
+                pubFrag.viewPager.setCurrentItem(0);
+            }
+        });
+        alertDialog2.show();
     }
 }

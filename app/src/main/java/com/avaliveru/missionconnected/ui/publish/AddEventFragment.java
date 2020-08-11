@@ -1,6 +1,8 @@
 package com.avaliveru.missionconnected.ui.publish;
 
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -154,29 +156,25 @@ public class AddEventFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 if (TextUtils.isEmpty(eventClub.getText().toString().trim())) {
-                    eventClub.setError("Please select a club from above.");
+                    alert(getString(R.string.empty_eventclub_alert));
                 } else if (TextUtils.isEmpty(eventName.getEditText().getText().toString().trim())) {
-                    eventName.setError("Please name your event.");
+                    alert(getString(R.string.empty_event_name_alert));
                 } else if (TextUtils.isEmpty(eventDate.getEditText().getText().toString().trim())) {
-                    eventDate.setError("Please set an event date.");
+                    alert(getString(R.string.empty_event_date_alert));
                 } else if (TextUtils.isEmpty(eventPreview.getEditText().getText().toString().trim())) {
-                    eventPreview.setError("Please write a short Preview of your event");
+                    alert(getString(R.string.empty_event_preview_alert));
                 } else if (TextUtils.isEmpty(eventDescription.getEditText().getText().toString().trim())) {
-                    eventDescription.setError("Please write a description of all important event details.");
+                    alert(getString(R.string.empty_event_desc_alert));
                 } else if (mImageUri == null) {
-
+                    alert(getString(R.string.empty_event_image_alert));
                 } else {
-
                     FirebaseStorage storage = FirebaseStorage.getInstance();
                     StorageReference storageRef = storage.getReference();
                     String imageName = "event" + new Date().getTime();
                     final StorageReference imageRef = storageRef.child("eventimages").child(imageName);
-
                     if (isFromEdit) {
-
                         if (mImageUri.toString().split("/")[2].equals("firebasestorage.googleapis.com")) {
                             edit(mImageUri.toString(), eventID);
-
                             eventClub.setText("");
                             eventName.getEditText().setText("");
                             eventDate.getEditText().setText("");
@@ -216,7 +214,6 @@ public class AddEventFragment extends Fragment {
                         }
                     } else {
                         // Create a storage reference from our app
-
                         imageRef.putFile(mImageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                             @Override
                             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
@@ -253,11 +250,28 @@ public class AddEventFragment extends Fragment {
                             }
                         });
                     }
+                    alert(getString(R.string.event_publish_success_alert));
+
                 }
             }
+
         });
 
         return root;
+    }
+
+    private void alert(String s) {
+        AlertDialog.Builder alertDialog2 = new AlertDialog.Builder(getContext());
+        alertDialog2.setTitle("Alert");
+        alertDialog2.setMessage(s);
+        alertDialog2.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+                PublishFragment pubFrag = (PublishFragment) getParentFragment();
+                pubFrag.viewPager.setCurrentItem(0);
+            }
+        });
+        alertDialog2.show();
     }
 
     private void fetchClubOfficerIDs() {

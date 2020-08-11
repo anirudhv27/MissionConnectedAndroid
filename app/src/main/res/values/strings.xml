@@ -20,4 +20,21 @@
     <string name="invalid_loginid_alert">Invalid email for this school. Please login with your FUSD GAFE Account.</string>
     <string name="firebase_auth_error">Firebase authentication failure. Please try again.</string>
     <string name="general_login_failure_error">Sign In failed. Please try again.</string>
+    <string name="eventcannotgo">Can\'t Go</string>
+    <string name="eventcango">I\'m Going!</string>
+    <string name="club_unsubscribe">Unsubscribe</string>
+    <string name="club_subscribe">Subscribe</string>
+    <string name="empty_club_alert">Please select a club from My Clubs with Officer Rank.</string>
+    <string name="empty_officer_alert">Please select Pick Officers.</string>
+    <string name="empty_club_preview_alert">Please enter Club Preview.</string>
+    <string name="empty_club_desc_alert">Please enter Club Description.</string>
+    <string name="empty_club_image_alert">Please select Club Image.</string>
+    <string name="club_updated_succes_alert">Club Information updated successfully.</string>
+    <string name="empty_eventclub_alert">Please select an Event Club. Note it is an auto fill text field.</string>
+    <string name="empty_event_name_alert">Please enter an Event Name.</string>
+    <string name="empty_event_date_alert">Please select an Event Date.</string>
+    <string name="empty_event_preview_alert">Please enter an Event Preview.</string>
+    <string name="empty_event_desc_alert">Please enter an Event Description.</string>
+    <string name="empty_event_image_alert">Please select an Event Image.</string>
+    <string name="event_publish_success_alert">Event published successfully.</string>
 </resources>
