@@ -56,6 +56,7 @@
                         android:hint="Pick Officer"
                         android:completionThreshold="1"
                         android:id="@+id/pickOfficersInput"/>
+
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout

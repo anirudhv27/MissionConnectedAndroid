@@ -15,6 +15,7 @@ import android.text.InputType;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -106,6 +107,15 @@ public class UpdateClubsFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 openFileChooser();
+            }
+        });
+
+        pickOfficers.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                if (b) {
+                    pickOfficers.setText("");
+                }
             }
         });
         updateButton.setOnClickListener(new View.OnClickListener() {

@@ -187,7 +187,6 @@ public class PublishFragment extends Fragment {
                     if (updateClubsFragment.clubPreview != null) {
                         updateClubsFragment.clubPreview.getEditText().setText(currClub.clubPreview);
                     }
-                    if (updateClubsFragment.pickOfficers != null) {/*
                         final ArrayList<String> clubOfficerNames = new ArrayList<>();
                         final ArrayList<String> clubOfficerIDs = new ArrayList<>();
                         DatabaseReference usersRef= FirebaseDatabase.getInstance()
@@ -196,15 +195,19 @@ public class PublishFragment extends Fragment {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot snapshot) {
                                 for (DataSnapshot childSnapshot : snapshot.getChildren()) {
-                                    if (childSnapshot.child("clubs").child(currClub.clubID)
-                                            .getValue().toString().equals("Officer")) {
-                                        clubOfficerIDs.add(childSnapshot.getKey());
-                                        clubOfficerNames.add(childSnapshot.child("fullname").getValue().toString());
+                                    if (childSnapshot.child("clubs").child(currClub.clubID).exists()) {
+                                        if (childSnapshot.child("clubs").child(currClub.clubID)
+                                                .getValue().toString().equals("Officer")) {
+                                            clubOfficerIDs.add(childSnapshot.getKey());
+                                            clubOfficerNames.add(childSnapshot.child("fullname").getValue().toString() +
+                                                    " (" + childSnapshot.child("email").getValue().toString() + ")");
+                                        }
                                     }
                                 }
 
-                                updateClubsFragment.userIDs = clubOfficerIDs;
-                                updateClubsFragment.userNames = clubOfficerNames;
+                                //updateClubsFragment.userIDs = clubOfficerIDs;
+                                //updateClubsFragment.userNames = clubOfficerNames;
+
                                 StringBuilder csvBuilder = new StringBuilder();
                                 for (String name : clubOfficerNames) {
                                     csvBuilder.append(name);
@@ -212,7 +215,6 @@ public class PublishFragment extends Fragment {
                                 }
 
                                 String csv = csvBuilder.toString();
-                                csv = csv.substring(0, csv.length() - 2);
 
                                 updateClubsFragment.pickOfficers.setText(csv);
 
@@ -221,8 +223,7 @@ public class PublishFragment extends Fragment {
                             @Override
                             public void onCancelled(@NonNull DatabaseError error) { }
                         });
-                        */
-                    }
+
 
                     updateClubsFragment.clubID = currClub.clubID;
 
