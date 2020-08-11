@@ -1,6 +1,7 @@
 package com.avaliveru.missionconnected.ui;
 
-import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
@@ -9,13 +10,11 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.avaliveru.missionconnected.R;
-import com.avaliveru.missionconnected.dataModels.Club;
 import com.avaliveru.missionconnected.dataModels.Event;
 import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
@@ -27,7 +26,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 public class EventsDetailsActivity extends AppCompatActivity {
-
     Event event;
     Button isGoingButton;
     boolean isGoing;
@@ -36,7 +34,6 @@ public class EventsDetailsActivity extends AppCompatActivity {
     DatabaseReference rootRef = FirebaseDatabase.getInstance()
             .getReference();
     DatabaseReference myEventNamesRef = rootRef.child("users").child(currentUser.getUid()).child("events");
-
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -54,10 +51,10 @@ public class EventsDetailsActivity extends AppCompatActivity {
         isGoing = getIntent().getBooleanExtra("isGoing", false);
         if (isGoing) {
             isGoingButton.setBackgroundColor(Color.parseColor("#dd0031"));
-            isGoingButton.setText("Can't Go");
+            isGoingButton.setText(R.string.eventcannotgo);
         } else {
             isGoingButton.setBackgroundColor(Color.parseColor("#3FA33F"));
-            isGoingButton.setText("I'm Going!");
+            isGoingButton.setText(R.string.eventcango);
         }
 
         DatabaseReference eventDetailsRef= rootRef
@@ -67,16 +64,19 @@ public class EventsDetailsActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 event = new Event();
                 event.eventID = snapshot.getKey();
-                event.eventDescription = snapshot.child("event_description").getValue().toString();
-                event.eventPreview = snapshot.child("event_preview").getValue().toString();
-                event.eventImageURL = snapshot.child("event_image_url").getValue().toString();
-                event.eventName = snapshot.child("event_name").getValue().toString();
-                event.numberOfAttendees = Integer.parseInt(snapshot.child("member_numbers").getValue().toString());
+                event.eventDescription = (snapshot.child("event_description").getValue() == null)?"":snapshot.child("event_description").getValue().toString();
+                event.eventPreview = (snapshot.child("event_preview").getValue()==null)?"":snapshot.child("event_preview").getValue().toString();
+                event.eventImageURL = (snapshot.child("event_image_url").getValue() == null)?"":snapshot.child("event_image_url").getValue().toString();
+                event.eventName = (snapshot.child("event_name").getValue() == null)? "":snapshot.child("event_name").getValue().toString();
+                event.numberOfAttendees = Integer.parseInt((snapshot.child("member_numbers").getValue()== null)?"0":snapshot.child("member_numbers").getValue().toString());
 
                 eventNameTextView.setText(event.eventName);
                 eventDescriptionTextView.setText(event.eventDescription);
                 memberTextView.setText("Number of Attendees: " + event.numberOfAttendees);
-                Glide.with(EventsDetailsActivity.this).load(Uri.parse(event.eventImageURL)).into(eventImageView);
+                if(!event.eventImageURL.equals(""))
+                 Glide.with(EventsDetailsActivity.this).load(Uri.parse(event.eventImageURL)).into(eventImageView);
+                else
+                    eventImageView.setImageResource(R.mipmap.ic_login_image);
             }
 
             @Override
@@ -84,34 +84,51 @@ public class EventsDetailsActivity extends AppCompatActivity {
         });
     }
 
-    //TODO: Implement what to do when isGoing item is pressed
-    public void imGoingButtonActionPressed(View view) {
+    public void imGoingButtonActionPressed( View v) {
+
+        String alertTitle, alertMessage, alertButton;
+        if(isGoing) {
+            alertTitle = "Leave this event?";
+            alertMessage = "Leave" + event.eventName + "?";
+            alertButton = "Leave";
+        }else {
+            alertTitle = "Join?";
+            alertMessage = "Are you going to "+event.eventName+"?";
+            alertButton = "Join";
+        }
+        AlertDialog.Builder alertDialog2 = new AlertDialog.Builder( this);
+        alertDialog2.setTitle(alertTitle);
+        alertDialog2.setMessage(alertMessage);
+        alertDialog2.setPositiveButton(alertButton, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                imGoingButtonActionPressedConfirmed();
+                dialog.cancel();
+            }
+        });
+        alertDialog2.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.cancel();
+                finish();
+            }
+        });
+        alertDialog2.show();
+    }
+
+
+   private void imGoingButtonActionPressedConfirmed() {
         String eventID = getIntent().getStringExtra("eventName");
 
         if (isGoing) {
             myEventNamesRef.child(eventID).child("isGoing").setValue(false);
-
             rootRef.child("schools").child("missionsanjosehigh")
-                    .child("events").child(getIntent().getStringExtra("eventName")).child("member_numbers")
+                    .child("events").child(eventID).child("member_numbers")
                     .setValue(event.numberOfAttendees - 1);
-
-            event.numberOfAttendees -= 1;
-
-            isGoing = false;
-            isGoingButton.setBackgroundColor(Color.parseColor("#3FA33F"));
-            isGoingButton.setText("I'm Going!");
         } else {
             myEventNamesRef.child(eventID).child("isGoing").setValue(true);
-
             rootRef.child("schools").child("missionsanjosehigh")
                     .child("events").child(eventID).child("member_numbers")
                     .setValue(event.numberOfAttendees + 1);
-            event.numberOfAttendees += 1;
-
-            isGoing = true;
-            isGoingButton.setBackgroundColor(Color.parseColor("#dd0031"));
-            isGoingButton.setText("Can't Go");
-
         }
         finish();
     }

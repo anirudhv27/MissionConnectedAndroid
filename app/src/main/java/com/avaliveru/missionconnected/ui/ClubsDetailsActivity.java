@@ -1,6 +1,7 @@
 package com.avaliveru.missionconnected.ui;
 
-import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
@@ -10,7 +11,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -27,12 +27,12 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 public class ClubsDetailsActivity extends AppCompatActivity {
-
     Club club;
     Button subscribeButton;
     boolean isMyClub;
     FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
     String loginUserId = currentUser.getUid();
+
     DatabaseReference rootRef = FirebaseDatabase.getInstance()
             .getReference();
     DatabaseReference myClubNamesRef = rootRef.child("users").child(loginUserId).child("clubs");
@@ -52,10 +52,10 @@ public class ClubsDetailsActivity extends AppCompatActivity {
         isMyClub = getIntent().getBooleanExtra("isMyClub", false);
         if (isMyClub) {
             subscribeButton.setBackgroundColor(Color.parseColor("#dd0031"));
-            subscribeButton.setText("Unsubscribe");
+            subscribeButton.setText(R.string.club_unsubscribe);
         } else {
             subscribeButton.setBackgroundColor(Color.parseColor("#3FA33F"));
-            subscribeButton.setText("Subscribe");
+            subscribeButton.setText(R.string.club_subscribe);
         }
         DatabaseReference clubDetailsRef= rootRef
                 .child("schools").child("missionsanjosehigh").child("clubs").child(clubName);
@@ -64,11 +64,11 @@ public class ClubsDetailsActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 club = new Club();
                 club.clubID = snapshot.getKey();
-                club.clubDescription = snapshot.child("club_description").getValue().toString();
-                club.clubPreview = snapshot.child("club_preview").getValue().toString();
-                club.clubImageURL = snapshot.child("club_image_url").getValue().toString();
-                club.clubName = snapshot.child("club_name").getValue().toString();
-                club.numberOfMembers = Integer.parseInt(snapshot.child("member_numbers").getValue().toString());
+                club.clubDescription = (snapshot.child("club_description").getValue() == null)?"" : snapshot.child("club_description").getValue().toString();
+                club.clubPreview = (snapshot.child("club_preview").getValue() == null)?"":snapshot.child("club_preview").getValue().toString();
+                club.clubImageURL = (snapshot.child("club_image_url").getValue() == null)?"":snapshot.child("club_image_url").getValue().toString();
+                club.clubName = (snapshot.child("club_name").getValue() == null)?"":snapshot.child("club_name").getValue().toString();
+                club.numberOfMembers = Integer.parseInt((snapshot.child("member_numbers").getValue() == null)?"0":snapshot.child("member_numbers").getValue().toString());
 
                 clubNameTextView.setText(club.clubName);
                 clubDescriptionTextView.setText(club.clubDescription);
@@ -78,7 +78,6 @@ public class ClubsDetailsActivity extends AppCompatActivity {
                 else
                     clubImageView.setImageResource(R.mipmap.ic_login_image);
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError error) { }
         });
@@ -86,17 +85,45 @@ public class ClubsDetailsActivity extends AppCompatActivity {
 
     public void allClubEventsButtonPressed(View view) {
         String clubID = getIntent().getStringExtra("clubName");
-
         Intent newIntent = new Intent(ClubsDetailsActivity.this, AllClubEventsActivity.class);
         newIntent.putExtra("clubID", clubID);
         startActivity(newIntent);
     }
 
     public void subscribeButtonActionPressed(View view) {
-        String clubID = getIntent().getStringExtra("clubName");
+        String alertTitle, alertMessage, alertButton;
+        if(isMyClub) {
+            alertTitle = "Leave this Club?";
+            alertMessage = "Leave " + club.clubName+ "?";
+            alertButton = "Leave";
+        }else {
+            alertTitle = "Join?";
+            alertMessage = "Subscribe to "+club.clubName +"?";
+            alertButton = "Join";
+        }
+        AlertDialog.Builder alertDialog2 = new AlertDialog.Builder( this);
+        alertDialog2.setTitle(alertTitle);
+        alertDialog2.setMessage(alertMessage);
+        alertDialog2.setPositiveButton(alertButton, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                subscribeButtonActionPressedConfirmed();
+                dialog.cancel();
+            }
+        });
+        alertDialog2.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.cancel();
+                finish();
+            }
+        });
+        alertDialog2.show();
+    }
+
+    public void subscribeButtonActionPressedConfirmed(){
+        final String clubID = getIntent().getStringExtra("clubName");
         if (isMyClub) {
             myClubNamesRef.child(clubID).removeValue();
-
             DatabaseReference eventsRef = rootRef.child("schools").child("missionsanjosehigh").child("clubs").child(clubID).child("events");
             eventsRef.addValueEventListener(new ValueEventListener() {
                 @Override
@@ -111,16 +138,9 @@ public class ClubsDetailsActivity extends AppCompatActivity {
                 @Override
                 public void onCancelled(@NonNull DatabaseError error) { }
             });
-
-            //TODO: fix numberOfMembers because the club is not passed to the listener
             rootRef.child("schools").child("missionsanjosehigh")
                     .child("clubs").child(getIntent().getStringExtra("clubName")).child("member_numbers")
                     .setValue(club.numberOfMembers - 1);
-            club.numberOfMembers -= 1;
-
-            isMyClub = false;
-            subscribeButton.setBackgroundColor(Color.parseColor("#3FA33F"));
-            subscribeButton.setText("Subscribe");
         } else {
             myClubNamesRef.child(clubID).setValue("Member");
             DatabaseReference eventsRef = rootRef.child("schools").child("missionsanjosehigh").child("clubs").child(clubID).child("events");
@@ -135,21 +155,12 @@ public class ClubsDetailsActivity extends AppCompatActivity {
                                 .child("events").child(event).child("isGoing").setValue(false);
                     }
                 }
-
                 @Override
                 public void onCancelled(@NonNull DatabaseError error) { }
             });
-
-            //TODO: fix numberOfMembers because the club is not passed to the listener
             rootRef.child("schools").child("missionsanjosehigh")
                     .child("clubs").child(clubID).child("member_numbers")
                     .setValue(club.numberOfMembers + 1);
-            club.numberOfMembers += 1;
-
-            isMyClub = true;
-            subscribeButton.setBackgroundColor(Color.parseColor("#dd0031"));
-            subscribeButton.setText("Unsubscribe");
-
         }
         finish();
     }

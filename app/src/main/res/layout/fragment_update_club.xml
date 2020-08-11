@@ -53,7 +53,7 @@
                     <MultiAutoCompleteTextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="Pick Officer"
+                        android:hint="Pick Officers"
                         android:completionThreshold="1"
                         android:id="@+id/pickOfficersInput"/>
                 </com.google.android.material.textfield.TextInputLayout>
