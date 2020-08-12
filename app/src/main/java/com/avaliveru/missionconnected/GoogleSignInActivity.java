@@ -3,7 +3,6 @@ package com.avaliveru.missionconnected;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -26,12 +25,8 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-
-import java.util.ArrayList;
-import java.util.Objects;
 
 
 public class GoogleSignInActivity extends AppCompatActivity implements View.OnClickListener {
@@ -41,35 +36,14 @@ public class GoogleSignInActivity extends AppCompatActivity implements View.OnCl
     private GoogleSignInClient mGoogleSignInClient;
     SignInButton signInButton;
     FirebaseUser currentUser;
-    private ArrayList<String> domains;
-    private ArrayList<String> special_users;
+    //private ArrayList<String> domains;
+    //private ArrayList<String> special_users;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_google_sign_in);
-        domains = new ArrayList<>();
-        special_users = new ArrayList<>();
 
-        //building data for email check
-        FirebaseDatabase.getInstance().getReference()
-                .child("schools").child("missionsanjosehigh").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                DataSnapshot domainSnap = snapshot.child("domains");
-                DataSnapshot specialUsers = snapshot.child("special_users");
-                for (DataSnapshot child : domainSnap.getChildren())
-                     domains.add((String) child.getValue());
-                for (DataSnapshot child : specialUsers.getChildren())
-                    special_users.add((String) child.getValue());
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-        //end data to check email validity/////
 
         mAuth = FirebaseAuth.getInstance();
         if(mAuth.getCurrentUser()!= null){
@@ -91,13 +65,9 @@ public class GoogleSignInActivity extends AppCompatActivity implements View.OnCl
         if (requestCode == RC_SIGN_IN) {
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             try {
-               GoogleSignInAccount account = task.getResult(ApiException.class);
+               final GoogleSignInAccount account = task.getResult(ApiException.class);
                 assert account != null;
-                if(isValidEmail(account.getEmail()) ){
-                    firebaseAuthWithGoogle(account.getIdToken());
-                }else
-                   alertLoginError(getString(R.string.invalid_loginid_alert));
-
+                firebaseAuthWithGoogle(account.getIdToken());
             } catch (ApiException e) {
                 // Sign in failed
                 alertLoginError(getString(R.string.general_login_failure_error));
@@ -105,15 +75,7 @@ public class GoogleSignInActivity extends AppCompatActivity implements View.OnCl
         }
     }
 
-    private boolean isValidEmail(String email) {
-        boolean validUser = false;
-        String emailDomain = email.split("@")[1];
 
-        if(special_users.contains(email) || domains.contains(emailDomain)  )
-            validUser = true;
-        return validUser;
-
-    }
 
     private void alertLoginError(String message) {
         AlertDialog.Builder alertDialog2 = new AlertDialog.Builder( this);
@@ -138,49 +100,39 @@ public class GoogleSignInActivity extends AppCompatActivity implements View.OnCl
 
     private void firebaseAuthWithGoogle(String idToken) {
         AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
-        mAuth.signInWithCredential(credential)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            currentUser = mAuth.getCurrentUser();
-                                addUserToFirebaseDB();
-                                Intent newIntent = new Intent(GoogleSignInActivity.this, MainActivity.class);
-                                startActivity(newIntent);
-                        } else {
-                            alertLoginError(getString(R.string.firebase_auth_error));
-                            Log.d(TAG, "signInWithCredential:failed");
-                        }
-                    }
-
-                });
+        mAuth.signInWithCredential(credential).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                if (task.isSuccessful()) {
+                    currentUser = mAuth.getCurrentUser();
+                    checkAndInsertUserToFireDB();
+                } else {
+                    alertLoginError(getString(R.string.firebase_auth_error));
+                    Log.d(TAG, "signInWithCredential:failed");
+                }
+            }
+        });
     }
 
-
-
-    private void addUserToFirebaseDB() {
+    private void checkAndInsertUserToFireDB() {
         FirebaseDatabase.getInstance().getReference().child("users")
-                    .child(currentUser.getUid()).addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    if(!snapshot.exists()) {
-                        DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference();
-                        DatabaseReference usersRef = dbRef.child("users");
-
-                        String key = currentUser.getUid();
-                        usersRef.child(key).child("email").setValue(currentUser.getEmail());
-                        usersRef.child(key).child("fullname").setValue(currentUser.getDisplayName());
-                        usersRef.child(key).child("isAdmin").setValue(false);
-                        usersRef.child(key).child("school").setValue("missionsanjosehigh");
-                        if (currentUser.getPhotoUrl()!=null) {
-                            usersRef.child(key).child("imgurl").setValue(currentUser.getPhotoUrl().toString());
-                        }
-                    }
+                .child(currentUser.getUid()).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(snapshot.exists()) {
+                    //User in Fire DB , goto main activity
+                    Intent newIntent = new Intent(GoogleSignInActivity.this, MainActivity.class);
+                    startActivity(newIntent);
+                }else{
+                    //User not in FireDB! Register the user
+                    Intent newIntent = new Intent(GoogleSignInActivity.this, PickSchoolActivity.class);
+                    startActivity(newIntent);
                 }
+            }
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) { }
-            });
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) { }
+        });
 
     }
 

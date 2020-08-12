@@ -37,4 +37,8 @@
     <string name="empty_event_desc_alert">Please enter an Event Description.</string>
     <string name="empty_event_image_alert">Please select an Event Image.</string>
     <string name="event_publish_success_alert">Event published successfully.</string>
+    <string name="empty_school_register_error">Please select a valid school you want to Register with.</string>
+    <string name="pick_school_message_2">Please note: You cannot change your school once the school is picked at the time of registration.</string>
+    <string name="pick_school_message_1">Pick a school below to show you the most relevant club information at your school.</string>
+    <string name="pick_your_school">Pick Your School</string>
 </resources>
