@@ -3,14 +3,17 @@ package com.avaliveru.missionconnected;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -35,12 +38,19 @@ import java.util.ArrayList;
 
 public class PickSchoolActivity extends AppCompatActivity implements View.OnClickListener {
     private static final String TAG = "PickSchool";
-    AutoCompleteTextView schoolName;
-    Button registerSchoolButton;
-    FirebaseUser currentUser;
-    ArrayList<String> domains ;
-    ArrayList<String> special_users;
+    private AutoCompleteTextView schoolName;
+    private Button registerSchoolButton;
+    private FirebaseUser currentUser;
+    private ArrayList<String> domains ;
+    private ArrayList<String> special_users;
+    //private String schoolname;
+    private String schoolID;
+    private ArrayList<String> schoolIDs;
+    private ArrayList<String> schoolNames;
+    private AutoCompleteTextView userSchool;
+    ArrayAdapter<String> clubAdapter;
 
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,19 +63,53 @@ public class PickSchoolActivity extends AppCompatActivity implements View.OnClic
         registerSchoolButton.setOnClickListener(this);
 
 
+        fetchSchoolDetails();
+
+
+
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(FirebaseAuth.getInstance() != null)
+            FirebaseAuth.getInstance().signOut();
+    }
+
+    private void fetchSchoolDetails() {
+        schoolNames = new ArrayList<>();
+        schoolIDs = new ArrayList<>();
+        FirebaseDatabase.getInstance().getReference().child("schools").addValueEventListener(new ValueEventListener() {
+            @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot child : snapshot.getChildren()) {
+                        schoolIDs.add(child.getKey());
+                        schoolNames.add(child.child("school_name").getValue().toString());
+                    }
+                userSchool = findViewById(R.id.schoolNameInput);
+                clubAdapter= new ArrayAdapter<>(PickSchoolActivity.this, android.R.layout.simple_list_item_1, schoolNames);
+                userSchool.setAdapter(clubAdapter);
+
+                }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
 
     @Override
     public void onClick(View view) {
         AutoCompleteTextView schoolNameView = findViewById(R.id.schoolNameInput);
         String school = schoolNameView.getText().toString().trim();
-        school = "missionsanjosehigh";
-        if(TextUtils.isEmpty(school)){
+
+        if(TextUtils.isEmpty(school) || ! schoolNames.contains(school)){
             alert(getString(R.string.empty_school_register_error));
             return;
         }
-        setSchoolData(school, currentUser.getEmail());
+        String schoolID = schoolIDs.get(schoolNames.indexOf(school));
+        setSchoolData(schoolID, currentUser.getEmail());
     }
 
 
