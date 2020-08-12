@@ -17,6 +17,7 @@ import android.provider.ContactsContract;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -106,7 +107,7 @@ public class AddEventFragment extends Fragment {
         fetchClubOfficerIDs();
         fetchClubOfficerNames();
 
-        ArrayAdapter<String> clubAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, clubNames);
+        final ArrayAdapter<String> clubAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, clubNames);
         eventClub.setAdapter(clubAdapter);
 
         eventClub.setOnDismissListener(new AutoCompleteTextView.OnDismissListener() {
@@ -119,6 +120,7 @@ public class AddEventFragment extends Fragment {
                 }
             }
         });
+
 
         eventDate.getEditText().setOnClickListener(new View.OnClickListener() {
             @Override
@@ -251,7 +253,6 @@ public class AddEventFragment extends Fragment {
                         });
                     }
                     alert(getString(R.string.event_publish_success_alert));
-
                 }
             }
 
@@ -268,6 +269,17 @@ public class AddEventFragment extends Fragment {
             public void onClick(DialogInterface dialog, int which) {
                 dialog.cancel();
                 PublishFragment pubFrag = (PublishFragment) getParentFragment();
+                isFromEdit = false;
+                eventClub.setText("");
+                eventName.getEditText().setText("");
+                eventDate.getEditText().setText("");
+                eventPreview.getEditText().setText("");
+                eventDescription.getEditText().setText("");
+                eventImageButton.setImageBitmap(null);
+
+                scrollView.setFocusableInTouchMode(true);
+                scrollView.fullScroll(View.FOCUS_UP);
+
                 pubFrag.viewPager.setCurrentItem(0);
             }
         });
@@ -370,31 +382,31 @@ public class AddEventFragment extends Fragment {
         });
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        Bundle bundle = getArguments();
-        if (bundle != null) {
-            isFromEdit = bundle.getBoolean("isFromEdit");
-
-            if (isFromEdit) {
-                currClubID = bundle.getString("eventClubID");
-                currClubName = bundle.getString("clubName");
-                eventClub.setText(currClubName);
-                eventID = bundle.getString("eventID");
-                mImageUri = Uri.parse(bundle.getString("eventImageURL"));
-
-                eventName.getEditText().setText(bundle.getString("eventName"));
-                eventDate.getEditText().setText(bundle.getString("eventDate"));
-                eventPreview.getEditText().setText(bundle.getString("eventPreview"));
-                eventDescription.getEditText().setText(bundle.getString("eventDescription"));
-
-                Glide.with(getActivity()).load(mImageUri).into(eventImageButton);
-            }
-        } else {
-            isFromEdit = false;
-        }
-    }
+//    @Override
+//    public void onResume() {
+//        super.onResume();
+//        Bundle bundle = getArguments();
+//        if (bundle != null) {
+//            isFromEdit = bundle.getBoolean("isFromEdit");
+//
+//            if (isFromEdit) {
+//                currClubID = bundle.getString("eventClubID");
+//                currClubName = bundle.getString("clubName");
+//                eventClub.setText(currClubName);
+//                eventID = bundle.getString("eventID");
+//                mImageUri = Uri.parse(bundle.getString("eventImageURL"));
+//
+//                eventName.getEditText().setText(bundle.getString("eventName"));
+//                eventDate.getEditText().setText(bundle.getString("eventDate"));
+//                eventPreview.getEditText().setText(bundle.getString("eventPreview"));
+//                eventDescription.getEditText().setText(bundle.getString("eventDescription"));
+//
+//                Glide.with(getActivity()).load(mImageUri).into(eventImageButton);
+//            }
+//        } else {
+//            isFromEdit = false;
+//        }
+//    }
 
     private void openFileChooser() {
         Intent intent = new Intent();
