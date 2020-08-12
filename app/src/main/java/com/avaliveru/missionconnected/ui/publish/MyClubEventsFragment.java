@@ -65,6 +65,41 @@ public class MyClubEventsFragment extends Fragment {
                         eventIDs.add(childSnapshot.getKey());
                     }
                 }
+                events = new ArrayList<>();
+                DatabaseReference eventDetailRef = FirebaseDatabase.getInstance().getReference().child("schools").child("missionsanjosehigh").child("events");
+                eventDetailRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        for (DataSnapshot childSnapshot : snapshot.getChildren()) {
+                            if (eventIDs.contains(childSnapshot.getKey())) {
+                                Event event = new Event();
+                                event.eventID = childSnapshot.getKey();
+                                event.eventImageURL = childSnapshot.child("event_image_url").getValue().toString();
+                                event.eventName = childSnapshot.child("event_name").getValue().toString();
+                                event.eventClub = childSnapshot.child("event_club").getValue().toString();
+                                event.eventDescription = childSnapshot.child("event_description").getValue().toString();
+                                event.eventPreview = childSnapshot.child("event_preview").getValue().toString();
+                                event.numberOfAttendees = Integer.parseInt(childSnapshot.child("member_numbers").getValue().toString());
+
+                                SimpleDateFormat df = new SimpleDateFormat("MM-dd-yyyy");
+                                try {
+                                    event.eventDate = df.parse(childSnapshot.child("event_date").getValue().toString());
+                                } catch (ParseException e) {
+                                    e.printStackTrace();
+                                }
+
+                                events.add(event);
+                            }
+                        }
+
+                        mAdapter = new PublishEventsAdapter(events);
+                        mAdapter.notifyDataSetChanged();
+                        recyclerView.setAdapter(mAdapter);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) { }
+                });
             }
 
             @Override
@@ -73,40 +108,7 @@ public class MyClubEventsFragment extends Fragment {
     }
 
     private void fetchEventsList() {
-        events = new ArrayList<>();
-        DatabaseReference eventDetailRef = FirebaseDatabase.getInstance().getReference().child("schools").child("missionsanjosehigh").child("events");
-        eventDetailRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                for (DataSnapshot childSnapshot : snapshot.getChildren()) {
-                    if (eventIDs.contains(childSnapshot.getKey())) {
-                        Event event = new Event();
-                        event.eventID = childSnapshot.getKey();
-                        event.eventImageURL = childSnapshot.child("event_image_url").getValue().toString();
-                        event.eventName = childSnapshot.child("event_name").getValue().toString();
-                        event.eventClub = childSnapshot.child("event_club").getValue().toString();
-                        event.eventDescription = childSnapshot.child("event_description").getValue().toString();
-                        event.eventPreview = childSnapshot.child("event_preview").getValue().toString();
-                        event.numberOfAttendees = Integer.parseInt(childSnapshot.child("member_numbers").getValue().toString());
 
-                        SimpleDateFormat df = new SimpleDateFormat("MM-dd-yyyy");
-                        try {
-                            event.eventDate = df.parse(childSnapshot.child("event_date").getValue().toString());
-                        } catch (ParseException e) {
-                            e.printStackTrace();
-                        }
-
-                        events.add(event);
-                    }
-                }
-
-                mAdapter = new PublishEventsAdapter(events);
-                recyclerView.setAdapter(mAdapter);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) { }
-        });
     }
 
     @Nullable
@@ -119,24 +121,25 @@ public class MyClubEventsFragment extends Fragment {
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setHasFixedSize(true);
 
-        //fetchEvents();
+        fetchEventIDs();
+        fetchEventsList();
 
         return root;
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        fetchEventIDs();
-        fetchEventsList();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        events = new ArrayList<>();
-        eventIDs= new ArrayList<>();
-    }
+    //    @Override
+//    public void onResume() {
+//        super.onResume();
+//        fetchEventIDs();
+//        fetchEventsList();
+//    }
+//
+//    @Override
+//    public void onPause() {
+//        super.onPause();
+//        events = new ArrayList<>();
+//        eventIDs= new ArrayList<>();
+//    }
 
     private class PublishEventsAdapter extends RecyclerView.Adapter<PublishEventsAdapter.ViewHolder> {
         ArrayList<Event> events;
