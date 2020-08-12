@@ -36,6 +36,10 @@
         <activity
             android:name=".ui.AllClubEventsActivity"
             android:label="All Club Events" />
+        <activity android:name=".ui.publish.UpdateClubsActivity"
+            android:label="Update Clubs" />
+        <activity android:name=".ui.publish.AddEventActivity"
+            android:label="Add Events"/>
     </application>
 
 </manifest>

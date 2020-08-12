@@ -78,7 +78,7 @@ public class UpdateClubsFragment extends Fragment {
     public String clubID;
 
     private ScrollView scrollView;
-    private Uri mImageUri;
+    public Uri mImageUri;
 
     private static final int PICK_IMAGE_REQUEST = 2;
 
@@ -99,7 +99,7 @@ public class UpdateClubsFragment extends Fragment {
 
         fetchUsers();
 
-        ArrayAdapter<String> userAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, userNames);
+        final ArrayAdapter<String> userAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, userNames);
         pickOfficers.setAdapter(userAdapter);
         pickOfficers.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
         clubImage.setOnClickListener(new View.OnClickListener() {
@@ -109,14 +109,15 @@ public class UpdateClubsFragment extends Fragment {
             }
         });
 
-        pickOfficers.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View view, boolean b) {
-                if (b) {
-                    pickOfficers.setText("");
-                }
-            }
-        });
+//        pickOfficers.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+//            @Override
+//            public void onFocusChange(View view, boolean b) {
+//                if (b) {
+//                    //pickOfficers.setText("");
+//                    pickOfficers.setAdapter(userAdapter);
+//                }
+//            }
+//        });
         updateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -192,9 +193,11 @@ public class UpdateClubsFragment extends Fragment {
                 clubsRef.child("club_image_url").setValue(downloadURL);
                 final String[] officers = pickOfficers.getText().toString().split("\\s*,\\s*");
                 final ArrayList<String> officerIDs = new ArrayList<>();
+
                 for (String officer : officers) {
                     officerIDs.add(userIDs.get(userNames.indexOf(officer)));
                 }
+
                 userRef.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -244,7 +247,7 @@ public class UpdateClubsFragment extends Fragment {
                 for (DataSnapshot child : snapshot.getChildren()) {
                     userNames.add(child.child("fullname").getValue().toString() +
                             " (" + child.child("email").getValue().toString() + ")");
-                    userIDs.add(snapshot.getKey());
+                    userIDs.add(child.getKey());
                 }
             }
 
@@ -294,10 +297,20 @@ public class UpdateClubsFragment extends Fragment {
 
             clubID = bundle.getString("clubID");
             clubName.setText(bundle.getString("clubName"));
-            Glide.with(getContext()).load(Uri.parse(bundle.getString("clubImageURL"))).into(clubImage);
+            Glide.with(getContext()).load(mImageUri).into(clubImage);
             clubDescription.getEditText().setText(bundle.getString("clubDescription"));
             clubPreview.getEditText().setText(bundle.getString("clubPreview"));
         }
+
+        final ArrayAdapter<String> userAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, userNames);
+        pickOfficers.setAdapter(userAdapter);
+        pickOfficers.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
+        clubImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                openFileChooser();
+            }
+        });
     }
     private void alert(String s) {
         AlertDialog.Builder alertDialog2 = new AlertDialog.Builder(getContext());

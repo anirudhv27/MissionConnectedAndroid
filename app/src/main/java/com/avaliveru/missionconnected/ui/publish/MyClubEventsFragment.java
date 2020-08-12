@@ -120,10 +120,22 @@ public class MyClubEventsFragment extends Fragment {
         recyclerView.setHasFixedSize(true);
 
         //fetchEvents();
-        fetchEventIDs();
-        fetchEventsList();
 
         return root;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        fetchEventIDs();
+        fetchEventsList();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        events = new ArrayList<>();
+        eventIDs= new ArrayList<>();
     }
 
     private class PublishEventsAdapter extends RecyclerView.Adapter<PublishEventsAdapter.ViewHolder> {
@@ -165,6 +177,7 @@ public class MyClubEventsFragment extends Fragment {
             holder.setEventNameTitle(currEvent.eventName);
             holder.setEventDateTitle(currEvent.eventDate);
             holder.setImage(currEvent.eventImageURL);
+            holder.event = currEvent;
             holder.root.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -182,37 +195,6 @@ public class MyClubEventsFragment extends Fragment {
                         @Override
                         public void onCancelled(@NonNull DatabaseError error) { }
                     });
-                }
-            });
-
-            holder.editButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    PublishFragment pubFrag = (PublishFragment) getParentFragment();
-                    pubFrag.viewPager.setCurrentItem(1);
-
-                    pubFrag.tabLayout.getTabAt(1).select();
-                    AddEventFragment addEventFragment = (AddEventFragment) pubFrag.pagerAdapter.createFragment(1);
-
-
-                    Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("Los Angeles"));
-                    cal.setTime(currEvent.eventDate);
-
-                    String dateString = cal.get(Calendar.MONTH) + "/" +
-                            cal.get(Calendar.DAY_OF_MONTH) + "/" + cal.get(Calendar.YEAR);
-
-                    Bundle b = new Bundle();
-                    b.putString("clubName", holder.eventClub.getText().toString().trim());
-                    b.putString("eventName", currEvent.eventName);
-                    b.putString("eventDescription", currEvent.eventDescription);
-                    b.putString("eventClubID", currEvent.eventClub);
-                    b.putString("eventID", currEvent.eventID);
-                    b.putString("eventImageURL", currEvent.eventImageURL);
-                    b.putString("eventPreview", currEvent.eventPreview);
-                    b.putString("eventDate", dateString);
-                    b.putBoolean("isFromEdit", true);
-
-                    addEventFragment.setArguments(b);
                 }
             });
         }
@@ -245,17 +227,10 @@ public class MyClubEventsFragment extends Fragment {
                 editButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        PublishFragment pubFrag = (PublishFragment) getParentFragment();
-                        pubFrag.viewPager.setCurrentItem(1);
-
-                        //viewPager.setCurrentItem(1);
-                        pubFrag.tabLayout.getTabAt(1).select();
-                        AddEventFragment addEventFragment = (AddEventFragment) pubFrag.pagerAdapter.createFragment(1);
-
                         Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("Los Angeles"));
                         cal.setTime(event.eventDate);
 
-                        String dateString = cal.get(Calendar.MONTH) + "/" +
+                        String dateString = (cal.get(Calendar.MONTH) + 1) + "/" +
                                 cal.get(Calendar.DAY_OF_MONTH) + "/" + cal.get(Calendar.YEAR);
 
                         Bundle b = new Bundle();
@@ -267,9 +242,11 @@ public class MyClubEventsFragment extends Fragment {
                         b.putString("eventImageURL", event.eventImageURL);
                         b.putString("eventPreview", event.eventPreview);
                         b.putString("eventDate", dateString);
-                        b.putBoolean("isFromEdit", true);
 
-                        addEventFragment.setArguments(b);
+                        Intent newIntent = new Intent(getContext(), AddEventActivity.class);
+                        newIntent.putExtra("bundle", b);
+                        newIntent.putExtra("isFromEdit", true);
+                        startActivity(newIntent);
                     }
                 });
             }

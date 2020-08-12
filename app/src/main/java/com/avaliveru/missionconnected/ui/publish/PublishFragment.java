@@ -21,8 +21,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.avaliveru.missionconnected.GoogleSignInActivity;
+import com.avaliveru.missionconnected.MainActivity;
 import com.avaliveru.missionconnected.R;
 import com.avaliveru.missionconnected.dataModels.Club;
+import com.avaliveru.missionconnected.ui.AllClubsActivity;
 import com.avaliveru.missionconnected.ui.ClubsDetailsActivity;
 import com.avaliveru.missionconnected.ui.home.AllFragment;
 import com.avaliveru.missionconnected.ui.home.GoingFragment;
@@ -32,6 +35,7 @@ import com.bumptech.glide.Glide;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.firebase.ui.database.SnapshotParser;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.google.firebase.auth.FirebaseAuth;
@@ -51,6 +55,7 @@ public class PublishFragment extends Fragment {
     public ViewPager2 viewPager;
     public TabLayout tabLayout;
     public RecyclerView recyclerView;
+    private FloatingActionButton addEventsButton;
 
     private ArrayList<String> clubIDs;
     private ArrayList<Club> clubs;
@@ -123,28 +128,36 @@ public class PublishFragment extends Fragment {
         fetchClubIDs();
         fetchClubList();
         //fetchClubs();
-
-        tabLayout = root.findViewById(R.id.publishTabLayout);
         viewPager = root.findViewById(R.id.publishTabViewPager);
         pagerAdapter = new HomeViewPagerAdapter(getChildFragmentManager(), getLifecycle());
 
+
         pagerAdapter.addFragment(new MyClubEventsFragment(), "My Club Events");
-        pagerAdapter.addFragment(new AddEventFragment(), "Add Event");
-        pagerAdapter.addFragment(new UpdateClubsFragment(), "Update Clubs");
+        //pagerAdapter.addFragment(new AddEventFragment(), "Add Event");
+        //pagerAdapter.addFragment(new UpdateClubsFragment(), "Update Clubs");
 
         viewPager.setOrientation(ViewPager2.ORIENTATION_HORIZONTAL);
 
         viewPager.setAdapter(pagerAdapter);
 
-        new TabLayoutMediator(tabLayout, viewPager,
-                new TabLayoutMediator.TabConfigurationStrategy() {
-                    @Override
-                    public void onConfigureTab(@NonNull TabLayout.Tab tab, int position) {
-                        if (position == 0) tab.setText("My Club Events");
-                        else if (position == 1) tab.setText("Add Event");
-                        else if (position == 2) tab.setText("Update Clubs");
-                    }
-                }).attach();
+//        new TabLayoutMediator(tabLayout, viewPager,
+//                new TabLayoutMediator.TabConfigurationStrategy() {
+//                    @Override
+//                    public void onConfigureTab(@NonNull TabLayout.Tab tab, int position) {
+//                        if (position == 0) tab.setText("My Club Events");
+//                        else if (position == 1) tab.setText("Add Event");
+//                        //else if (position == 2) tab.setText("Update Clubs");
+//                    }
+//                }).attach();
+        addEventsButton = root.findViewById(R.id.addEventsButton);
+        addEventsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent newIntent = new Intent(getContext(), AddEventActivity.class);
+                newIntent.putExtra("isFromEdit", false);
+                startActivity(newIntent);
+            }
+        });
 
         return root;
     }
@@ -172,7 +185,20 @@ public class PublishFragment extends Fragment {
                 @Override
                 public void onClick(View view) {
                     //viewPager.setCurrentItem(1);
-                    tabLayout.getTabAt(2).select();
+
+                    Intent newIntent = new Intent(getContext(), UpdateClubsActivity.class);
+                    Bundle b = new Bundle();
+
+                    b.putString("clubName", currClub.clubName);
+                    b.putString("clubID", currClub.clubID);
+                    b.putString("clubPreview", currClub.clubPreview);
+                    b.putString("clubDescription", currClub.clubDescription);
+                    b.putString("clubImageURL", currClub.clubImageURL);
+
+                    newIntent.putExtra("bundle", b);
+                    startActivity(newIntent);
+
+                    /*tabLayout.getTabAt(2).select();
 
                     final UpdateClubsFragment updateClubsFragment = (UpdateClubsFragment) pagerAdapter.createFragment(2);
                     if (updateClubsFragment.clubName != null) {
@@ -227,16 +253,18 @@ public class PublishFragment extends Fragment {
 
                     updateClubsFragment.clubID = currClub.clubID;
 
+                     */
+                    //Glide.with(updateClubsFragment.getContext()).load(currClub.clubImageURL).into(updateClubsFragment.clubImage);
                     //make a bundle
-                    Bundle b = new Bundle();
+//                    Bundle b = new Bundle();
+//
+//                    b.putString("clubName", currClub.clubName);
+//                    b.putString("clubID", currClub.clubID);
+//                    b.putString("clubPreview", currClub.clubPreview);
+//                    b.putString("clubDescription", currClub.clubDescription);
+//                    b.putString("clubImageURL", currClub.clubImageURL);
 
-                    b.putString("clubName", currClub.clubName);
-                    b.putString("clubID", currClub.clubID);
-                    b.putString("clubPreview", currClub.clubPreview);
-                    b.putString("clubDescription", currClub.clubDescription);
-                    b.putString("clubImageURL", currClub.clubImageURL);
-
-                    updateClubsFragment.setArguments(b);
+//                    updateClubsFragment.setArguments(b);
                 }
             });
         }
