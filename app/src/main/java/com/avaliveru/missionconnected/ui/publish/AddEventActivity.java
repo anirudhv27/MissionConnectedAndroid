@@ -143,7 +143,7 @@ public class AddEventActivity extends AppCompatActivity {
                         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#FFFFFF")));
                         break;
                 }
-                
+
                 dialog.show();
             }
         });

@@ -87,6 +87,7 @@ public class ClubsDetailsActivity extends AppCompatActivity {
         String clubID = getIntent().getStringExtra("clubName");
         Intent newIntent = new Intent(ClubsDetailsActivity.this, AllClubEventsActivity.class);
         newIntent.putExtra("clubID", clubID);
+        newIntent.putExtra("isSubscribed", isMyClub);
         startActivity(newIntent);
     }
 
