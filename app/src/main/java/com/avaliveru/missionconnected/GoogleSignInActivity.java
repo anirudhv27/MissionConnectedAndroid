@@ -33,6 +33,8 @@ public class GoogleSignInActivity extends AppCompatActivity implements View.OnCl
     private static final String TAG = "GoogleSignInActivity";
     private FirebaseAuth mAuth;
     private static final int RC_SIGN_IN = 9001;
+    //private static final int RESULT_OK = 9002;
+
     private GoogleSignInClient mGoogleSignInClient;
     SignInButton signInButton;
     FirebaseUser currentUser;
@@ -62,7 +64,7 @@ public class GoogleSignInActivity extends AppCompatActivity implements View.OnCl
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == RC_SIGN_IN) {
+        if (requestCode == RC_SIGN_IN && (resultCode == RESULT_OK)) {
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             try {
                final GoogleSignInAccount account = task.getResult(ApiException.class);
@@ -98,7 +100,7 @@ public class GoogleSignInActivity extends AppCompatActivity implements View.OnCl
     }
 
 
-    private void firebaseAuthWithGoogle(String idToken) {
+    private void    firebaseAuthWithGoogle(String idToken) {
         AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
         mAuth.signInWithCredential(credential).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
             @Override

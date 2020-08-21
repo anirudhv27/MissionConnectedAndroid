@@ -108,6 +108,11 @@ public class GoingFragment extends Fragment {
                 }
                 mAdapter = new EventsAdapter(getContext(), events);
                 recyclerView.setAdapter(mAdapter);
+                if (mAdapter.getItemCount() == 0) {
+                    recyclerView.setVisibility(View.INVISIBLE);
+                } else {
+                    recyclerView.setVisibility(View.VISIBLE);
+                }
             }
 
             @Override
