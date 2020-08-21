@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Matrix;
@@ -134,9 +135,16 @@ public class AddEventActivity extends AppCompatActivity {
 
                 DatePickerDialog dialog = new DatePickerDialog(AddEventActivity.this, R.style.Theme_AppCompat_DayNight_Dialog,
                         dateSetListener, year, month, day);
-                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#FFFFFF")));
+                switch (getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK) {
+                    case Configuration.UI_MODE_NIGHT_YES:
+                        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#000000")));
+                        break;
+                    case Configuration.UI_MODE_NIGHT_NO:
+                        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#FFFFFF")));
+                        break;
+                }
+                
                 dialog.show();
-
             }
         });
 

@@ -132,7 +132,7 @@ public class AddEventFragment extends Fragment {
 
                 DatePickerDialog dialog = new DatePickerDialog(getActivity(), R.style.Theme_AppCompat_DayNight_Dialog,
                         dateSetListener, year, month, day);
-                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#FFFFFF")));
+                //dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#000000")));
                 dialog.show();
 
             }
