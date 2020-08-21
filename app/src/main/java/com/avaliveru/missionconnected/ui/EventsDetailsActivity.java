@@ -29,6 +29,7 @@ public class EventsDetailsActivity extends AppCompatActivity {
     Event event;
     Button isGoingButton;
     boolean isGoing;
+    boolean isSubscribed;
 
     FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
     DatabaseReference rootRef = FirebaseDatabase.getInstance()
@@ -48,13 +49,22 @@ public class EventsDetailsActivity extends AppCompatActivity {
         final TextView memberTextView = findViewById(R.id.eventDetailsMemberNumberTextView);
 
         String eventName = getIntent().getStringExtra("eventName");
-        isGoing = getIntent().getBooleanExtra("isGoing", false);
-        if (isGoing) {
-            isGoingButton.setBackgroundColor(Color.parseColor("#dd0031"));
-            isGoingButton.setText(R.string.eventcannotgo);
+        isGoing = getIntent().getBooleanExtra("isGoing", true);
+        isSubscribed = getIntent().getBooleanExtra("isSubscribed", false);
+
+        if (isSubscribed) {
+            if (isGoing) {
+                isGoingButton.setBackgroundColor(Color.parseColor("#dd0031"));
+                isGoingButton.setText(R.string.eventcannotgo);
+            } else {
+                isGoingButton.setBackgroundColor(Color.parseColor("#3FA33F"));
+                isGoingButton.setText(R.string.eventcango);
+            }
         } else {
-            isGoingButton.setBackgroundColor(Color.parseColor("#3FA33F"));
-            isGoingButton.setText(R.string.eventcango);
+            isGoingButton.setBackgroundColor(Color.parseColor("#a6a6a6"));
+            isGoingButton.setText("Subscribe to this club to RSVP for Events!");
+            isGoingButton.setFocusable(false);
+            isGoingButton.setClickable(false);
         }
 
         DatabaseReference eventDetailsRef= rootRef
@@ -96,6 +106,7 @@ public class EventsDetailsActivity extends AppCompatActivity {
             alertMessage = "Are you going to "+event.eventName+"?";
             alertButton = "Join";
         }
+
         AlertDialog.Builder alertDialog2 = new AlertDialog.Builder( this);
         alertDialog2.setTitle(alertTitle);
         alertDialog2.setMessage(alertMessage);
@@ -112,6 +123,7 @@ public class EventsDetailsActivity extends AppCompatActivity {
                 finish();
             }
         });
+
         alertDialog2.show();
     }
 

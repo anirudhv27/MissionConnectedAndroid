@@ -26,6 +26,8 @@ import com.bumptech.glide.Glide;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.firebase.ui.database.SnapshotParser;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -45,6 +47,7 @@ public class AllClubEventsActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private FirebaseRecyclerAdapter adapter;
     private String clubID;
+    private boolean isSubscribed;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -52,6 +55,8 @@ public class AllClubEventsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_all_club_events);
 
         clubID = getIntent().getStringExtra("clubID");
+        isSubscribed = getIntent().getBooleanExtra("isSubscribed", false);
+
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         recyclerView = findViewById(R.id.allClubEventsRecyclerView);
         recyclerView.setLayoutManager(layoutManager);
@@ -126,19 +131,34 @@ public class AllClubEventsActivity extends AppCompatActivity {
                         holder.root.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
+
+                                final String eventID = snapshot.getKey();
                                 final Intent intent = new Intent(AllClubEventsActivity.this, EventsDetailsActivity.class);
-                                String eventID = snapshot.getKey();
-                                intent.putExtra("eventName", eventID);
-                                intent.putExtra("isGoing", false);
-                                AllClubEventsActivity.this.startActivity(intent);
+                                FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+                                rootRef.child("users").child(currentUser.getUid()).child("events").child(eventID).child("isGoing").addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                        boolean isGoing = (boolean) snapshot.getValue();
+                                        intent.putExtra("eventName", eventID);
+                                        intent.putExtra("isGoing", isGoing);
+                                        intent.putExtra("isSubscribed", isSubscribed);
+                                        AllClubEventsActivity.this.startActivity(intent);
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError error) {
+                                    }
+                                });
                             }
                         });
                     }
 
                     @Override
-                    public void onCancelled(@NonNull DatabaseError error) { }
+                    public void onCancelled(@NonNull DatabaseError error) {
+                    }
                 });
             }
+
             @NonNull
             @Override
             public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -181,6 +201,7 @@ public class AllClubEventsActivity extends AppCompatActivity {
         public void setEventNameTitle(String string) {
             eventName.setText(string);
         }
+
         public void setEventClubTitle(String string) {
             eventClub.setText(string);
         }

@@ -187,4 +187,40 @@ public class PickSchoolActivity extends AppCompatActivity implements View.OnClic
         alertDialog2.show();
     }
 
+    @Override
+    public void onBackPressed() {
+        AlertDialog.Builder alertDialog2 = new AlertDialog.Builder(this);
+        alertDialog2.setTitle("Logout");
+        alertDialog2.setMessage("Are you sure you want to log out?");
+        alertDialog2.setPositiveButton("YES",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        GoogleSignInClient mGoogleSignInClient ;
+                        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                                .requestIdToken(getString(R.string.default_web_client_id))
+                                .requestEmail()
+                                .build();
+                        mGoogleSignInClient = GoogleSignIn.getClient(PickSchoolActivity.this, gso);
+                        mGoogleSignInClient.signOut().addOnCompleteListener(PickSchoolActivity.this, new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                FirebaseAuth.getInstance().signOut();
+                                Intent i = new Intent(PickSchoolActivity.this, GoogleSignInActivity.class);
+                                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK |
+                                        Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                startActivity(i);
+                            }
+                        });
+                    }
+                });
+        alertDialog2.setNegativeButton("NO",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                        PickSchoolActivity.this.onBackPressed();
+                    }
+                });
+        alertDialog2.show();
+    }
 }

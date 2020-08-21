@@ -124,6 +124,7 @@ public class GoogleSignInActivity extends AppCompatActivity implements View.OnCl
                 if(snapshot.exists()) {
                     //User in Fire DB , goto main activity
                     Intent newIntent = new Intent(GoogleSignInActivity.this, MainActivity.class);
+                    newIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(newIntent);
                 }else{
                     //User not in FireDB! Register the user
@@ -143,5 +144,4 @@ public class GoogleSignInActivity extends AppCompatActivity implements View.OnCl
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
-
 }

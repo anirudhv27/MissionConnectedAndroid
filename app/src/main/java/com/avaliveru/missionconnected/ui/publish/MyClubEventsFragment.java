@@ -181,6 +181,7 @@ public class MyClubEventsFragment extends Fragment {
             holder.setEventDateTitle(currEvent.eventDate);
             holder.setImage(currEvent.eventImageURL);
             holder.event = currEvent;
+
             holder.root.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -192,6 +193,7 @@ public class MyClubEventsFragment extends Fragment {
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
                             boolean isGoing = (boolean) snapshot.getValue();
                             intent.putExtra("isGoing", isGoing);
+                            intent.putExtra("isSubscribed", true);
                             getContext().startActivity(intent);
                         }
 

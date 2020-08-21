@@ -82,6 +82,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         boolean isGoing = (boolean) snapshot.getValue();
                         intent.putExtra("isGoing", isGoing);
+                        intent.putExtra("isSubscribed", true);
                         context.startActivity(intent);
                     }
 
