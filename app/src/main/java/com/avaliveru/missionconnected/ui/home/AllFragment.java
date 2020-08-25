@@ -3,6 +3,7 @@ package com.avaliveru.missionconnected.ui.home;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.Html;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -46,6 +47,7 @@ import java.util.Set;
 
 public class AllFragment extends Fragment {
     private RecyclerView recyclerView;
+    private TextView emptyText;
 
     private ArrayList<String> eventIDs;
     private ArrayList<Event> events;
@@ -112,6 +114,13 @@ public class AllFragment extends Fragment {
                 }
                 mAdapter = new EventsAdapter(getContext(), events);
                 recyclerView.setAdapter(mAdapter);
+                if (mAdapter.getItemCount() == 0) {
+                    emptyText.setVisibility(View.VISIBLE);
+                    recyclerView.setVisibility(View.INVISIBLE);
+                } else {
+                    emptyText.setVisibility(View.INVISIBLE);
+                    recyclerView.setVisibility(View.VISIBLE);
+                }
             }
 
             @Override
@@ -127,14 +136,12 @@ public class AllFragment extends Fragment {
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
 
         recyclerView = root.findViewById(R.id.allRecyclerView);
+        emptyText = root.findViewById(R.id.allRecyclerView_no_data);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setHasFixedSize(true);
-
-        //fetchEventIDs();
-        //fetchEventsList();
-
-        //fetchEvents();
-
+        emptyText.setText(Html.fromHtml(getString(R.string.no_all_events)));
+        //emptyText.setVisibility(View.VISIBLE);
+        //recyclerView.setVisibility(View.INVISIBLE);
         return root;
     }
 

@@ -1,16 +1,11 @@
 package com.avaliveru.missionconnected.ui.home;
 
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import android.text.format.DateUtils;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -19,20 +14,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.avaliveru.missionconnected.R;
-import com.avaliveru.missionconnected.SimpleCallback;
 import com.avaliveru.missionconnected.dataModels.Event;
-import com.avaliveru.missionconnected.ui.EventsDetailsActivity;
-import com.bumptech.glide.Glide;
-import com.firebase.ui.database.FirebaseRecyclerAdapter;
-import com.firebase.ui.database.FirebaseRecyclerOptions;
-import com.firebase.ui.database.SnapshotParser;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.text.ParseException;
@@ -43,6 +31,7 @@ import java.util.Date;
 
 public class GoingFragment extends Fragment {
     private RecyclerView recyclerView;
+    private TextView emptyText;
 
     private ArrayList<String> eventIDs;
     private ArrayList<Event> events;
@@ -109,8 +98,10 @@ public class GoingFragment extends Fragment {
                 mAdapter = new EventsAdapter(getContext(), events);
                 recyclerView.setAdapter(mAdapter);
                 if (mAdapter.getItemCount() == 0) {
+                    emptyText.setVisibility(View.VISIBLE);
                     recyclerView.setVisibility(View.INVISIBLE);
                 } else {
+                    emptyText.setVisibility(View.INVISIBLE);
                     recyclerView.setVisibility(View.VISIBLE);
                 }
             }
@@ -123,19 +114,15 @@ public class GoingFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.fragment_all, container, false);
+        View root = inflater.inflate(R.layout.fragment_going, container, false);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
 
-        recyclerView = root.findViewById(R.id.allRecyclerView);
+        recyclerView = root.findViewById(R.id.goingRecyclerView);
+        emptyText = root.findViewById(R.id.goingRecyclerView_no_data);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setHasFixedSize(true);
-
-        //fetchEventIDs();
-        //fetchEventsList();
-
-        //fetchEvents();
-
+        emptyText.setText(Html.fromHtml(getString(R.string.no_going_events)));
         return root;
     }
 

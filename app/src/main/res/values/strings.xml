@@ -41,4 +41,15 @@
     <string name="pick_school_message_2">Please note: You cannot change your school once the school is picked at the time of registration.</string>
     <string name="pick_school_message_1">Pick a school below to show you the most relevant club information at your school.</string>
     <string name="pick_your_school">Pick Your School</string>
+
+    <string name="no_clubs"><![CDATA[<b>You are not a part of any clubs!</b><br\><br\>
+   Click Join Clubs for a list of all clubs available at your school.]]></string>
+    <string name="no_going_events"><![CDATA[<b>You are not going to any events!</b><br\><br\>
+   RSVP to any of your club events to have it show up here!]]></string>
+    <string name="no_all_events"><![CDATA[<b>You clubs don\'t have any events in the future!</b><br\><br\>
+   This area will show all of the events from clubs that you have signed up for!]]></string>
+    <string name="no_myclub_events"><![CDATA[<b>You are not an officer of any clubs!</b><br\><br\>
+   If you would like to propose a new club at our school, please contact ASB and follow the school guidelines for club formation!]]></string>
+    <string name="no_club_events"><![CDATA[<b>This club has no events!</b><br\><br\>
+   If you are an officer of this club please go to Publish tab to add new events!]]></string>
 </resources>

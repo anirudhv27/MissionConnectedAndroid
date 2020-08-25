@@ -12,6 +12,14 @@
         android:layout_height="match_parent"
         android:id="@+id/myClubsTabRecyclerView"
         android:scrollbars="vertical"/>
+    <TextView
+        android:id="@+id/myClubsTabRecyclerView_no_data"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:text="no data"
+        android:textAppearance="?android:textAppearanceMedium"
+        android:visibility="invisible" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:layout_width="wrap_content"

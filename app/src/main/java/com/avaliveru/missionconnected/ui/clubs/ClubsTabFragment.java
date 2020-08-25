@@ -3,6 +3,7 @@ package com.avaliveru.missionconnected.ui.clubs;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -55,20 +56,22 @@ import java.util.Set;
 
 public class ClubsTabFragment extends Fragment {
     private RecyclerView recyclerView;
+    private TextView emptyText;
     private FirebaseRecyclerAdapter adapter;
     private FloatingActionButton addClubsButton;
+    boolean isEmpty = true;
 
-    private Set<String> myClubNames = new HashSet<>();
-
-    public View onCreateView(@NonNull LayoutInflater inflater,
+       public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
         super.onCreateView(inflater, container, savedInstanceState);
         View root = inflater.inflate(R.layout.fragment_clubs, container, false);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         recyclerView = root.findViewById(R.id.myClubsTabRecyclerView);
+        emptyText = root.findViewById(R.id.myClubsTabRecyclerView_no_data);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setHasFixedSize(true);
+
 
         addClubsButton = root.findViewById(R.id.addClubsButton);
         addClubsButton.setOnClickListener(new View.OnClickListener() {
@@ -81,11 +84,16 @@ public class ClubsTabFragment extends Fragment {
         addClubsButton.setVisibility(View.VISIBLE);
 
         fetchMyClubs();
+        emptyText.setText(Html.fromHtml(getString(R.string.no_clubs)));
+        emptyText.setVisibility(View.VISIBLE);
+        recyclerView.setVisibility(View.INVISIBLE);
+
 
         return root;
     }
 
     private void fetchMyClubs() {
+
         DatabaseReference rootRef = FirebaseDatabase.getInstance()
                 .getReference();
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -100,7 +108,8 @@ public class ClubsTabFragment extends Fragment {
                             @NonNull
                             @Override
                             public String parseSnapshot(@NonNull DataSnapshot snapshot) {
-
+                                emptyText.setVisibility(View.INVISIBLE);
+                                recyclerView.setVisibility(View.VISIBLE);
                                 if (snapshot.getValue().toString().equals("Officer") || snapshot.getValue().toString().equals("Member")) {
                                     return snapshot.getValue().toString();
                                 } else {
@@ -152,6 +161,7 @@ public class ClubsTabFragment extends Fragment {
 
         };
         recyclerView.setAdapter(adapter);
+
     }
 
     @Override
