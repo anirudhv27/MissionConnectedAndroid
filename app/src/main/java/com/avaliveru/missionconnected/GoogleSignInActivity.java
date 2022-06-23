@@ -65,6 +65,7 @@ public class GoogleSignInActivity extends AppCompatActivity implements View.OnCl
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == RC_SIGN_IN && (resultCode == RESULT_OK)) {
+            System.out.println("Task");
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             try {
                final GoogleSignInAccount account = task.getResult(ApiException.class);

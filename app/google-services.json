@@ -1,43 +1,58 @@
 {
   "project_info": {
-    "project_number": "24957027063",
-    "firebase_url": "https://mission-connected-test.firebaseio.com",
-    "project_id": "mission-connected-test",
-    "storage_bucket": "mission-connected-test.appspot.com"
+    "project_number": "527167996378",
+    "firebase_url": "https://mission-connected.firebaseio.com",
+    "project_id": "mission-connected",
+    "storage_bucket": "mission-connected.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:24957027063:android:8510ea0b1de542c9d0c9f2",
+        "mobilesdk_app_id": "1:527167996378:android:0af46ad92075849e4a80e3",
         "android_client_info": {
           "package_name": "com.avaliveru.missionconnected"
         }
       },
       "oauth_client": [
         {
-          "client_id": "24957027063-dfp54ln10aqcdrkeqk1t3rl2fj034a4g.apps.googleusercontent.com",
+          "client_id": "527167996378-ddh2d122ocui9ci2vqbm4c7ds6q3nuh2.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.avaliveru.missionconnected",
-            "certificate_hash": "fab22c4317ac90e88ddef00dbd7b43b08d42d363"
+            "certificate_hash": "7fc1677f17a8fa42d559ecccb5cdf354b4f1679f"
           }
         },
         {
-          "client_id": "24957027063-1egpaa4g60ll4e2rohov9u6s2mlu6otn.apps.googleusercontent.com",
+          "client_id": "527167996378-9cmfrh4uopie6f3co1ec4hu0hrrge4ug.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.avaliveru.missionconnected",
+            "certificate_hash": "e2829b1709ed03b634da48e86f58406eec73f3b7"
+          }
+        },
+        {
+          "client_id": "527167996378-p1sjst35d3uj8va2f7berojc7lbgqh7c.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyD8mvJrzQFADmxPe9oBFiR0X2MvbwYviqE"
+          "current_key": "AIzaSyB5cavmVcsB30DUx6MajeLy6wfErNWrWIY"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "24957027063-1egpaa4g60ll4e2rohov9u6s2mlu6otn.apps.googleusercontent.com",
+              "client_id": "527167996378-p1sjst35d3uj8va2f7berojc7lbgqh7c.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "527167996378-01u99v0udkht3loqu8fgfhsu2s3o33fk.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.valiveru.Mission-Connect"
+              }
             }
           ]
         }

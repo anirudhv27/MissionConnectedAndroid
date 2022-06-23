@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.method.ScrollingMovementMethod;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -72,6 +73,7 @@ public class ClubsDetailsActivity extends AppCompatActivity {
 
                 clubNameTextView.setText(club.clubName);
                 clubDescriptionTextView.setText(club.clubDescription);
+                clubDescriptionTextView.setMovementMethod(new ScrollingMovementMethod());
                 memberTextView.setText("Members: " + club.numberOfMembers);
                 if(!club.clubImageURL.equals(""))
                     Glide.with(ClubsDetailsActivity.this).load(Uri.parse(club.clubImageURL)).into(clubImageView);

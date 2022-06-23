@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.method.ScrollingMovementMethod;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -82,6 +83,8 @@ public class EventsDetailsActivity extends AppCompatActivity {
 
                 eventNameTextView.setText(event.eventName);
                 eventDescriptionTextView.setText(event.eventDescription);
+                eventDescriptionTextView.setMovementMethod(new ScrollingMovementMethod());
+
                 memberTextView.setText("Number of Attendees: " + event.numberOfAttendees);
                 if(!event.eventImageURL.equals(""))
                  Glide.with(EventsDetailsActivity.this).load(Uri.parse(event.eventImageURL)).into(eventImageView);
